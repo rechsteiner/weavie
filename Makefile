@@ -3,6 +3,7 @@ all: flash.img
 		-machine virt -m 32M \
 		-nographic \
 		-monitor telnet:127.0.0.1:4000,server,nowait \
+		-serial mon:stdio \
 		-drive if=pflash,format=raw,file=flash.img
 
 flash.img: main.bin
