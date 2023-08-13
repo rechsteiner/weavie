@@ -37,6 +37,11 @@ make clean
 - J-Link: [SEGGER J-Link EDU Mini](https://www.adafruit.com/product/3571)
 - Keys: [NeoKey - Four Mechanical Key Switches](https://www.adafruit.com/product/4980)
 
+## Weaving
+
+- [How to Read a Weaving Draft](https://www.gistyarn.com/blogs/how-to-weave/how-to-read-a-weaving-draft)
+- [Reading a Weaving Draft](https://www.youtube.com/watch?v=qD6bKAhlDuI)
+
 ## ARM Assembly
 
 ### Startup
