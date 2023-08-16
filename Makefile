@@ -1,17 +1,12 @@
-all: flash.img
+all: main.elf
 	qemu-system-arm \
-		-machine virt -m 32M \
+		-cpu cortex-m4 \
+		-machine olimex-stm32-h405 \
 		-nographic \
 		-monitor telnet:127.0.0.1:4000,server,nowait \
 		-serial mon:stdio \
-		-drive if=pflash,format=raw,file=flash.img
-
-flash.img: main.bin
-	dd if=/dev/zero of=flash.img bs=1048576 count=64 # 1 megabyte = 1,048,576 bytes
-	dd if=main.bin of=flash.img conv=notrunc
-
-main.bin: main.elf
-	arm-none-eabi-objcopy -O binary main.elf main.bin
+		-semihosting-config enable=on,target=native \
+		-kernel main.elf
 
 main.elf: startup.s
 	arm-none-eabi-gcc -o main.elf startup.s -nostdlib -T linker.ld
