@@ -11,11 +11,20 @@ make
 Debugging QEMU:
 
 ```
-ns localhost 4000
-info registers
+make debug
 ```
 
-This should print out all the values of the registers (r0 should equal 0xdeadbeef).
+Step through assembly instruction:
+
+```
+si
+```
+
+Inspect register state:
+
+```
+info registers
+```
 
 Exiting QEMU:
 
@@ -65,3 +74,4 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [A bare metal programming guide (ARM microcontrollers)](https://github.com/cpq/bare-metal-programming-guide)
 - [HelloSilicon: An introduction to ARM64 assembly on Apple Silicon Macs](https://github.com/below/HelloSilicon)
 - [ARM Assembly Internals & Reverse Engineering](https://arm-assembly.com)
+- [Emulating an STM32F4 in QEMU to test ARM assembly](https://mcla.ug/blog/emulating-stm32-qemu.html)
