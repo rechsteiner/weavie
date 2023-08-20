@@ -72,6 +72,9 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [STM32F405 Reference Manual](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 - [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
 - [Adafruit STM32F405 Feather Express Pinouts](https://learn.adafruit.com/adafruit-stm32f405-feather-express/pinouts)
+- [SHARP Display Datasheet](https://cdn-shop.adafruit.com/datasheets/LS013B4DN04-3V_FPC-204284.pdf)
+- [Sharp Memory Display Wiring Guide](https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/displays/wiring-guide-sharp-memory-2.7-spi.md)
+- [LS013B4DN04 display driver](https://github.com/Moddable-OpenSource/moddable/blob/public/modules/drivers/ls013b4dn04/modLs013b4dn04.c)
 
 ## Articles
 
@@ -83,3 +86,4 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [ARM Assembly Internals & Reverse Engineering](https://arm-assembly.com)
 - [Emulating an STM32F4 in QEMU to test ARM assembly](https://mcla.ug/blog/emulating-stm32-qemu.html)
 - [Programming of ARM Cortex-M microcontrollers](http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html)
+- [SPI: The serial peripheral interface](https://www.youtube.com/watch?v=MCi7dCBhVpQ)
