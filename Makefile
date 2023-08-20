@@ -26,8 +26,14 @@ disassemble: main.bin
 main.bin: main.elf
 	arm-none-eabi-objcopy -O binary main.elf main.bin
 
-main.elf: startup.s linker.ld
-	arm-none-eabi-gcc -o main.elf startup.s -nostdlib -T linker.ld
+main.elf: startup.o led.o linker.ld
+	arm-none-eabi-ld -T linker.ld startup.o led.o -o main.elf
+
+startup.o: startup.s
+	arm-none-eabi-as -mthumb startup.s -o startup.o
+
+led.o: led.s
+	arm-none-eabi-as -mthumb led.s -o led.o
 
 clean:
 	rm -f main.elf main.bin flash.img

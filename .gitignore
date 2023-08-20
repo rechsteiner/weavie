@@ -1,3 +1,4 @@
 main.elf
 main.bin
+*.o
 flash.img
