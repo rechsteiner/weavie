@@ -26,6 +26,12 @@ Inspect register state:
 info registers
 ```
 
+Inspect memory address:
+
+```
+p/x 0x40020800
+```
+
 Exiting QEMU:
 
 ```
@@ -65,6 +71,7 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [STM32F405 Datasheet](https://www.st.com/resource/en/datasheet/stm32f405rg.pdf)
 - [STM32F405 Reference Manual](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 - [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
+- [Adafruit STM32F405 Feather Express Pinouts](https://learn.adafruit.com/adafruit-stm32f405-feather-express/pinouts)
 
 ## Articles
 
@@ -75,3 +82,4 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [HelloSilicon: An introduction to ARM64 assembly on Apple Silicon Macs](https://github.com/below/HelloSilicon)
 - [ARM Assembly Internals & Reverse Engineering](https://arm-assembly.com)
 - [Emulating an STM32F4 in QEMU to test ARM assembly](https://mcla.ug/blog/emulating-stm32-qemu.html)
+- [Programming of ARM Cortex-M microcontrollers](http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html)
