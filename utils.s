@@ -2,6 +2,8 @@
 .cpu cortex-m4
 .thumb
 
+.section .text
+
 .global delay
 
 // Adds a delay by adding a large number into register r2 and

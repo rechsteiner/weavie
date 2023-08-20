@@ -2,6 +2,8 @@
 .cpu cortex-m4
 .thumb
 
+.section .text
+
 .global setup_led
 .global enable_led
 .global disable_led
