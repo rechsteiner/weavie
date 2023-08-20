@@ -55,8 +55,11 @@ _reset_handler:
         mov sp, r0
         
 main:
-        bl enable_led
+        bl setup_led
         
-loop:
-        // Create an infinite loop.
-        b loop
+blink:  
+        bl enable_led
+        bl delay
+        bl disable_led
+        bl delay
+        b blink

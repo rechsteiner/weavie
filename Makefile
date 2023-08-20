@@ -26,11 +26,17 @@ disassemble: main.bin
 main.bin: main.elf
 	arm-none-eabi-objcopy -O binary main.elf main.bin
 
-main.elf: startup.o led.o linker.ld
-	arm-none-eabi-ld -T linker.ld startup.o led.o -o main.elf
+main.elf: startup.o led.o utils.o linker.ld
+	arm-none-eabi-ld -T linker.ld  -o main.elf \
+		startup.o \
+		utils.o \
+		led.o
 
 startup.o: startup.s
 	arm-none-eabi-as -mthumb startup.s -o startup.o
+
+utils.o: utils.s
+	arm-none-eabi-as -mthumb utils.s -o utils.o
 
 led.o: led.s
 	arm-none-eabi-as -mthumb led.s -o led.o

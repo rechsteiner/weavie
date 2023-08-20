@@ -2,7 +2,9 @@
 .cpu cortex-m4
 .thumb
 
+.global setup_led
 .global enable_led
+.global disable_led
 
 // The Reset and Clock Control (RCC) registers are located at
 // address 0x40023800 in memory. The GPIOC clock is located at
@@ -17,8 +19,7 @@
 .equ GPIOC_MODER, GPIOC + 0x0
 .equ GPIOC_ODR, GPIOC + 0x14
 
-// Enables pin GPIOC6 which is connected to pin 6 on the board.
-enable_led:
+setup_led:
         // Setting bit 2 in the RCC_AHB1ENR register will activate the
         // GPIO C port. Since this register is used for multiple
         // ports, we don't want to just set the value 0b100 as that
@@ -35,10 +36,20 @@ enable_led:
         ldr r0, [r1]
         orr r0, r0, #0b01000000000000
         str r0, [r1]
+        bx lr
 
-        // Enable the GPIOC6 LED by setting the 6th bit to 1 in the
-        // GPIOC_ODR register.
+// Enable the GPIOC6 LED by setting the 6th bit to 1 in GPIOC_ODR.
+enable_led:
         ldr r1, =GPIOC_ODR
         ldr r0, [r1]
         orr r0, r0, #0b1000000
         str r0, [r1]
+        bx lr
+
+// Disable the GPIOC6 LED by clearing the 6th bit in GPIOC_ODR.
+disable_led:
+        ldr r1, =GPIOC_ODR
+        ldr r0, [r1]
+        bic r0, r0, #0b1000000
+        str r0, [r1]
+        bx lr
