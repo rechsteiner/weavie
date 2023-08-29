@@ -38,7 +38,7 @@ startup.o: startup.s
 utils.o: utils.s
 	arm-none-eabi-as -mthumb utils.s -o utils.o
 
-led.o: led.s
+led.o: led.s constants.s
 	arm-none-eabi-as -mthumb led.s -o led.o
 
 clean:
