@@ -79,9 +79,8 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
 - [Adafruit STM32F405 Feather Express Pinouts](https://learn.adafruit.com/adafruit-stm32f405-feather-express/pinouts)
 - [Adafruit NeoKey 1x4 Pinouts](https://learn.adafruit.com/neokey-1x4-qt-i2c/pinouts)
-- [SHARP Display Datasheet](https://cdn-shop.adafruit.com/datasheets/LS013B4DN04-3V_FPC-204284.pdf)
+- [SHARP Display Datasheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1272/LS027B7DH01_Rev_Jun_2010.pdf)
 - [Sharp Memory Display Wiring Guide](https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/displays/wiring-guide-sharp-memory-2.7-spi.md)
-- [LS013B4DN04 display driver](https://github.com/Moddable-OpenSource/moddable/blob/public/modules/drivers/ls013b4dn04/modLs013b4dn04.c)
 
 ## Articles
 
