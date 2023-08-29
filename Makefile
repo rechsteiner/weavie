@@ -15,10 +15,7 @@ flash: main.bin
 	dfu-util -a 0 -s 0x08000000:leave -D main.bin
 
 debug:
-	arm-none-eabi-gdb main.elf \
-		-ex "target remote localhost:3333" \
-		-ex "set  disassemble-next-line on" \
-		-ex "show disassemble-next-line"
+	arm-none-eabi-gdb -x .gdbinit main.elf
 
 disassemble: main.bin
 	arm-none-eabi-objdump -marm -b binary -EL -D -M force-thumb main.bin

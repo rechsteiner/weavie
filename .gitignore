@@ -1,4 +1,5 @@
 main.elf
 main.bin
 *.o
+.gdb_history
 

@@ -32,6 +32,12 @@ Inspect memory address:
 p/x 0x40020800
 ```
 
+Restarting QEMU inside gdb:
+
+```
+monitor system_reset
+```
+
 Exiting QEMU:
 
 ```
