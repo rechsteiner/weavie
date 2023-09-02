@@ -30,6 +30,9 @@ Inspect memory address:
 
 ```
 p/x 0x40020800
+x $r2
+x/10x $r1
+x/20c $r1
 ```
 
 Restarting QEMU inside gdb:

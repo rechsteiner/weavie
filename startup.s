@@ -55,11 +55,5 @@ _reset_handler:
         mov sp, r0
         
 main:
-        bl setup_led
-        
-blink:  
-        bl enable_led
-        bl delay
-        bl disable_led
-        bl delay
-        b blink
+        bl setup_display
+        bl refresh_display
