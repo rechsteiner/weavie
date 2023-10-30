@@ -2,6 +2,19 @@
 
 ## Getting Started
 
+### Running on hardware
+
+- Connect the board to the USB port. 
+- Connect the BOOT0 (B0) pin to the 3.3V PIN. This enables the DFU bootloader mode.
+- Press the reset button on the board while connected to the USB.
+- Flash the chip:
+
+```
+make flash
+```
+
+### Running in QEMU
+
 To run in QEMU:
 
 ```

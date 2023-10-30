@@ -9,27 +9,37 @@
 
 // Configures the SPI peripherals for the display.
 setup_display:
-        // SPI Configuration:
+        // Load the value of SPI_CR1 into register r0. 
+        ldr r1, =SPI_CR1
+        ldr r0, [r1]
+
+        // Set our SPI configuration in SPI_CR1. We first need to
+        // clear the bits that we are interested in, just in case they
+        // are already set from before.
+        ldr r2, =0b100000111111
+        bic r0, r0, r2
+        
+        // We then load our SPI configuration into r2 and combine that
+        // with the existing values in SPI_CR1 using the logical OR
+        // instruction (orr), then store that back to SPI_CR1. This
+        // ensures that we only update the bits we care about.
+        //
+        // SPI configuration:
         // - 11: Data frame format: 16-bit (DFF = 1)
-        // - 5-3: Baud Rate: fPCLK/16 (BR = 011)
+        // - 5-3: Baud Clock Rate: fPCLK/16 (BR = 011)
         // - 2: Mode: Master (MSTR = 1)
         // - 1: Clock Polarity: High (CPOL = 1)
         // - 0: Clock Phase: 2nd edge (CPHA = 1)
-        ldr r1, =SPI_CR1
-        ldr r0, [r1]
-        // Clear the bits we want to change: 11th bit and last 6 bits
-        ldr r2, =0b100000111111
-        bic r0, r0, r2
-        // Set the 11th bit and the last 6 bits
         ldr r2, =0b100000011111
         orr r0, r0, r2
         str r0, [r1]
 
-        // Setting bit 2 in the RCC_AHB1ENR register will activate the
-        // GPIO C port. Since this register is used for multiple
-        // ports, we don't want to just set the value 0b100 as that
-        // would override any other configuration. Instead, we load
-        // the value of r1, OR it with 0b100 and store it back.
+        // Next we need to enable a GPIO pin that we use for Chip
+        // Select. Setting bit 2 in the RCC_AHB1ENR register will
+        // activate the GPIO C port. Since this register is used for
+        // multiple ports, we don't want to just set the value 0b100
+        // as that would override any other configuration. Instead, we
+        // load the value of r1, OR it with 0b100 and store it back.
         ldr r1, =RCC_AHB1ENR
         ldr r0, [r1]
         orr r0, r0, #0b100
