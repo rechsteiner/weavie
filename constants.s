@@ -3,21 +3,31 @@
 // offset 0x30, which gives us 0x40023830.
 .equ RCC, 0x40023800
 .equ RCC_AHB1ENR, RCC + 0x30
+.equ RCC_APB1ENR, RCC + 0x40
 
-// GPIO port C is located at 0x40020800. The port mode register
+// GPIO port C is located at 0x4002 0800. The port mode register
 // (GPIOC_MODER) is at offset 0x0 and the port output data register
 // (GPIOC_ODR) is at offset 0x14.
 .equ GPIOC, 0x40020800
 .equ GPIOC_MODER, GPIOC + 0x0
 .equ GPIOC_ODR, GPIOC + 0x14
+.equ GPIOC_OTYPER, GPIOC + 0x04
 
-// SPI1 is located at address 0x40013000. The SPI control register 1
+// GPIO port B is located at 0x4002 0400. The port mode register
+// (GPIOB_MODER) is at offset 0x0 and the alternate function high
+// register (GPIOB_AFRH) is at offset 0x24.
+.equ GPIOB, 0x40020400
+.equ GPIOB_MODER, GPIOB + 0x0
+.equ GPIOB_ODR, GPIOB + 0x14
+.equ GPIOB_AFRH, GPIOB + 0x24
+
+// SPI2 is located at address 0x4000 3800. The SPI control register 1
 // (SPI_CR1) is at offset 0x00, the SPI status register (SPI_SR) is at
 // offset 0x08, and the SPI data register (SPI_DR) is at offset 0x0C.
-.equ SPI1, 0x40013000
-.equ SPI_CR1, SPI1 + 0x00
-.equ SPI_SR, SPI1 + 0x08
-.equ SPI_DR, SPI1 + 0x0C
+.equ SPI2, 0x40003800
+.equ SPI_CR1, SPI2 + 0x00
+.equ SPI_SR, SPI2 + 0x08
+.equ SPI_DR, SPI2 + 0x0C
 
 // The frame buffer is used to store the memory for each pixel in the
 // display. The base address is just a place in SRAM where we can fit

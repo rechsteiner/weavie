@@ -25,6 +25,8 @@
 .global _vector_table
 .global _reset_handler
 
+.include "constants.s"
+
 _vector_table:
         // The _estack value comes from the linker script and denotes
         // the position of the end the stack. Placing it as the first
@@ -56,4 +58,33 @@ _reset_handler:
         
 main:
         bl setup_display
+
+setup_frame_buffer:
+        // Load the start address of the frame buffer.
+        ldr r0, =FRBUF
+
+        // Load a random pattern into r1 which we'll fill the frame
+        // buffer with.
+        mov r1, #0xCCCCCCCC
+
+        // Load the count into r2. We need to write 12 full patterns
+        // (400/32=12,5).
+        mov r2, #12
+
+setup_frame_buffer__loop:
+        // Store pattern to memory and post-increment the address
+        str r1, [r0], #4
+
+        // Decrement counter and loop if not done
+        subs r2, r2, #1
+        bne setup_frame_buffer__loop
+
+        // Finally store half the pattern (16-bits) to reach 400 bits,
+        // since we need to fill 12,5 registers per line.
+        strh r1, [r0]
+        
         bl refresh_display
+loop:
+        bl delay
+        bl refresh_display
+        b loop
