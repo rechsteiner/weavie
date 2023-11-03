@@ -1,6 +1,9 @@
 .PHONY: debug
 
-all: main.elf
+all: main.bin
+	cargo run --manifest-path emulator/Cargo.toml
+
+qemu: main.elf
 	qemu-system-arm \
 		-S \
 		-cpu cortex-m4 \

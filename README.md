@@ -13,15 +13,35 @@
 make flash
 ```
 
-### Running in QEMU
-
-To run in QEMU:
+### Running in emulator
 
 ```
 make
 ```
 
-Debugging QEMU:
+### Running in QEMU
+
+To run in QEMU:
+
+```
+make qemu
+```
+
+Restarting QEMU inside gdb:
+
+```
+monitor system_reset
+```
+
+Exiting QEMU:
+
+```
+Ctrl-A X
+```
+
+### Debugging
+
+Debugging in gdb:
 
 ```
 make debug
@@ -46,24 +66,6 @@ p/x 0x40020800
 x $r2
 x/10x $r1
 x/20c $r1
-```
-
-Restarting QEMU inside gdb:
-
-```
-monitor system_reset
-```
-
-Exiting QEMU:
-
-```
-Ctrl-A X
-```
-
-Cleaning:
-
-```
-make clean
 ```
 
 ## Hardware
