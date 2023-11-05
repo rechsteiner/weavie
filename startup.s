@@ -58,32 +58,59 @@ _reset_handler:
         
 main:
         bl setup_display
+        bl reset_graphics_buffer
 
-setup_frame_buffer:
-        // Load the start address of the frame buffer.
-        ldr r0, =FRBUF
+draw_shaft_grid:
+        mov r0, #9
+        mov r1, #9
+        mov r2, #29
+        mov r3, #4
+        mov r4, #10
+        bl draw_grid
 
-        // Load a random pattern into r1 which we'll fill the frame
-        // buffer with.
-        mov r1, #0xCCCCCCCC
+draw_tieup_grid:
+        mov r0, #309
+        mov r1, #9
+        mov r2, #8
+        mov r3, #4
+        mov r4, #10
+        bl draw_grid
+        
+draw_sequence_grid:
+        mov r0, #309
+        mov r1, #59
+        mov r2, #8
+        mov r3, #17
+        mov r4, #10
+        bl draw_grid
 
-        // Load the count into r2. We need to write 12 full patterns
-        // (400/32=12,5).
-        mov r2, #12
+draw_boxes:
+        mov r0, #289
+        mov r1, #10
+        mov r2, #10
+        mov r3, #10
+        bl draw_rectangle
 
-setup_frame_buffer__loop:
-        // Store pattern to memory and post-increment the address
-        str r1, [r0], #4
+        mov r0, #279
+        mov r1, #20
+        mov r2, #10
+        mov r3, #10
+        bl draw_rectangle
 
-        // Decrement counter and loop if not done
-        subs r2, r2, #1
-        bne setup_frame_buffer__loop
+        mov r0, #269
+        mov r1, #30
+        mov r2, #10
+        mov r3, #10
+        bl draw_rectangle
 
-        // Finally store half the pattern (16-bits) to reach 400 bits,
-        // since we need to fill 12,5 registers per line.
-        strh r1, [r0]
+        mov r0, #259
+        mov r1, #40
+        mov r2, #10
+        mov r3, #10
+        bl draw_rectangle
         
         bl refresh_display
+        
 loop:
         bl delay
         bl refresh_display

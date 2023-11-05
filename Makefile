@@ -26,13 +26,14 @@ disassemble: main.bin
 main.bin: main.elf
 	arm-none-eabi-objcopy -O binary main.elf main.bin
 
-main.elf: startup.o display.o keyboard.o led.o utils.o linker.ld
+main.elf: startup.o display.o keyboard.o led.o utils.o graphics.o linker.ld
 	arm-none-eabi-ld -T linker.ld  -o main.elf \
 		startup.o \
 		display.o \
 		keyboard.o \
 		utils.o \
-		led.o
+		led.o \
+		graphics.o
 
 startup.o: startup.s
 	arm-none-eabi-as -mthumb startup.s -o startup.o
@@ -48,6 +49,9 @@ utils.o: utils.s
 
 led.o: led.s constants.s
 	arm-none-eabi-as -mthumb led.s -o led.o
+
+graphics.o: graphics.s constants.s
+	arm-none-eabi-as -mthumb graphics.s -o graphics.o
 
 clean:
 	rm -f main.elf main.bin flash.img
