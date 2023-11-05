@@ -84,8 +84,8 @@ impl Display {
                             for bit_index in 0..8 {
                                  // Isolate each bit
                                 let bit = (byte >> bit_index) & 1;
-                                 // If bit is set, pixel is white (0xFFFFFFFF), else black (0x00000000)
-                                let pixel = if bit == 1 { 0xFFFFFFFF } else { 0x00000000 };
+                                 // If bit is set, pixel is white-ish or black
+                                let pixel = if bit == 1 { 0xDDDDDDDD } else { 0x00000000 };
                                 pixel_buffer.push(pixel);
                             }
                         }
