@@ -94,12 +94,12 @@ setup_display__spi_configuration:
         // - 11: Data frame format: 8-bit (DFF = 0)
         // - 9: Software slave management: SSM enabled (SSM = 1)
         // - 8: Internal slave select: (SSI = 1)
-        // - 7: Frame format: MSB transmitted first (LSBFIRST = 0)
+        // - 7: Frame format: MSB transmitted first (LSBFIRST = 1)
         // - 5-3: Baud Clock Rate: fPCLK/8 (BR = 010)
         // - 2: Mode: Master (MSTR = 1)
         // - 1: Clock Polarity: Low (CPOL = 0)
         // - 0: Clock Phase: 1nd edge (CPHA = 0)
-        ldr r1, =0b001100010100
+        ldr r1, =0b001110010100
         orr r0, r0, r1
         str r0, [r2]
         
@@ -122,7 +122,7 @@ refresh_display__write:
         
         // Mode Selection Period (Data Update Mode Multiple Lines)
         // Bit Sequence: M0 | M1 | M2 | DMY | DMY | DMY | DMY | DMY
-        ldr r3, =0b10000000
+        ldr r3, =0b00000001
         str r3, [r0]
         bl wait_txe
         bl wait_delay
@@ -130,12 +130,12 @@ refresh_display__write:
         // Store the line count in r4. Each time we write a line we
         // will increment this until we have reached 240 lines.
         mov r4, #1
-        
-refresh_display__write_line:
+
         // Load the frame buffer address which will be used to
         // transfer the data.
         ldr r1, =FRBUF
         
+refresh_display__write_line:
         // Store a counter to keep track of when to move to the next
         // line. Each line is 400 pixels wide and we send 8-bits each
         // time, which means be need to send 400/8=50 times per line.
@@ -144,8 +144,6 @@ refresh_display__write_line:
         // Gate Line Address Period (8 bits)
         // Bit Sequence: AGO | AG1 | AG2 | AG3 | AG4 | AG5 | AG6 | AG7
         mov r5, r4
-        rbit r5, r5
-        lsrs r5, r5, #24
         str r5, [r0]
         bl wait_txe
 

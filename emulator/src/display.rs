@@ -34,7 +34,7 @@ impl Display {
         match self.state {
             DisplayState::Empty | DisplayState::Completed =>  {
                 match data {
-                    0b10000000 => {
+                    0b00000001 => {
                         println!("DISPLAY transfer begin");
                         self.state = DisplayState::TransferLineStart;
                         self.data = vec![];
@@ -45,8 +45,7 @@ impl Display {
                 }
             },
             DisplayState::TransferLineStart => {
-                let line = data.reverse_bits();
-                self.state = DisplayState::TransferLineData(line);
+                self.state = DisplayState::TransferLineData(data);
             },
             DisplayState::TransferLineData(line) => {
                 self.data.push(data);
@@ -84,7 +83,7 @@ impl Display {
                         for &byte in self.data.iter() {
                             for bit_index in 0..8 {
                                  // Isolate each bit
-                                let bit = (byte >> (7 - bit_index)) & 1;
+                                let bit = (byte >> bit_index) & 1;
                                  // If bit is set, pixel is white (0xFFFFFFFF), else black (0x00000000)
                                 let pixel = if bit == 1 { 0xFFFFFFFF } else { 0x00000000 };
                                 pixel_buffer.push(pixel);

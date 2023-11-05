@@ -34,5 +34,5 @@
 // all the bits. The display has 400x240 pixels, so the length of each
 // row (FRBUF_SIZE) is 0x190 and it has 0xF0 rows (FRBUF_ROWS).
 .equ FRBUF, 0x20000000
-.equ FRBUF_SIZE, 0x190
+.equ FRBUF_WIDTH, 50
 .equ FRBUF_ROWS, 0xF0
