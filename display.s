@@ -153,6 +153,10 @@ refresh_display__write_line:
 refresh_display__write_line_data:
         // Load 32 bits from the frame buffer into r3 and increment r1.
         ldr r3, [r1], #1
+
+        // Invert the pixel values so the screen will be default white
+        // with black pixels for 1s.
+        mvn r3, r3
         
         // Copy frame data into the SPI_DR register.
         str r3, [r0]
