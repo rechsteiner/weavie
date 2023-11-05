@@ -5,6 +5,7 @@ use std::rc::Rc;
 
 mod display;
 use display::Display;
+use std::env;
 
 fn main() {
     let mut emulator = Unicorn::new(Arch::ARM, Mode::MCLASS | Mode::LITTLE_ENDIAN)
@@ -24,7 +25,15 @@ fn main() {
                 _ => true,
             }
         })
-        .expect("Failed to add hook");
+        .expect("failed to add hook");
+
+    let args: Vec<String> = env::args().collect();
+    let is_debug_mode = args.iter().any(|arg| arg == "debug");
+
+    if is_debug_mode {
+        udbserver::udbserver(&mut emulator, 3333, 0x0)
+            .expect("failed to start udbserver");   
+    }
 
     emulator
         .emu_start(0x08000009, 0, 0, 0).unwrap();

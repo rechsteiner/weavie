@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-unicorn-engine = "2.0.1"
+unicorn-engine = "2.0.0-rc7"
 minifb = "0.25"
-# udbserver
+udbserver = "0.1.0"
+

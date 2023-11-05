@@ -18,7 +18,7 @@ flash: main.bin
 	dfu-util -a 0 -s 0x08000000:leave -D main.bin
 
 debug:
-	arm-none-eabi-gdb -x .gdbinit main.elf
+	./debug.sh
 
 disassemble: main.bin
 	arm-none-eabi-objdump -marm -b binary -EL -D -M force-thumb main.bin
