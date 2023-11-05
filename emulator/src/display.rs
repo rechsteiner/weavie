@@ -20,8 +20,16 @@ impl Display {
     const HEIGHT: usize = 240;
     
     pub fn new() -> Self {
-        let window = Window::new("Weavie", Self::WIDTH, Self::HEIGHT, WindowOptions::default(),)
-            .expect("failed to create window");
+        let window = Window::new(
+            "Weavie",
+            Self::WIDTH,
+            Self::HEIGHT,
+            WindowOptions {
+                topmost: true,
+                ..WindowOptions::default()
+            },
+        )
+        .expect("failed to create window");
         
         Display {
             state: DisplayState::Empty,
