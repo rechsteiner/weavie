@@ -203,6 +203,7 @@ draw_grid__horizonal:
         // Calculate width of the vertical line
         mov r2, r7
         mul r2, r2, r9
+        add r2, r2, #1
 
         bl draw_horizontal_line
 
