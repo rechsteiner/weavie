@@ -44,7 +44,7 @@ draw_point:
         // We also need to offset in the y-direction. This is done by
         // multiplying the byte width (400/8=50) with r1 (the passed
         // in y position), then add that offset to the base address.
-        ldr r7, =FRBUF_WIDTH
+        ldr r7, =FRBUF_BYTES_PER_LINE
         mul r6, r1, r7
         add r3, r3, r6
 

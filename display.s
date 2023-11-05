@@ -139,7 +139,7 @@ refresh_display__write_line:
         // Store a counter to keep track of when to move to the next
         // line. Each line is 400 pixels wide and we send 8-bits each
         // time, which means be need to send 400/8=50 times per line.
-        mov r2, #50
+        mov r2, #FRBUF_BYTES_PER_LINE
 
         // Gate Line Address Period (8 bits)
         // Bit Sequence: AGO | AG1 | AG2 | AG3 | AG4 | AG5 | AG6 | AG7
@@ -175,7 +175,7 @@ refresh_display__write_line_data:
         bl wait_txe
 
         // Continue writing each line until we have reached the last one.
-        cmp r4, #240
+        cmp r4, #FRBUF_LINES
         ble refresh_display__write_line
 
         // Data Transfer Period (8 bits)
