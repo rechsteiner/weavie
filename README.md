@@ -4,9 +4,8 @@
 
 ### Running on hardware
 
-- Connect the board to the USB port. 
 - Connect the BOOT0 (B0) pin to the 3.3V PIN. This enables the DFU bootloader mode.
-- Press the reset button on the board while connected to the USB.
+- Connect the board to the USB port.
 - Flash the chip:
 
 ```
