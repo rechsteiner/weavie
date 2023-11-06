@@ -60,26 +60,26 @@ main:
         bl setup_display
         bl reset_graphics_buffer
 
-draw_shaft_grid:
+draw_threading_grid:
         mov r0, #9
         mov r1, #9
-        mov r2, #29
+        mov r2, #33
         mov r3, #4
         mov r4, #10
         bl draw_grid
 
 draw_tieup_grid:
-        mov r0, #309
+        mov r0, #349
         mov r1, #9
-        mov r2, #8
+        mov r2, #4
         mov r3, #4
         mov r4, #10
         bl draw_grid
         
-draw_sequence_grid:
-        mov r0, #309
+draw_treadling_grid:
+        mov r0, #349
         mov r1, #59
-        mov r2, #8
+        mov r2, #4
         mov r3, #17
         mov r4, #10
         bl draw_grid
@@ -93,14 +93,6 @@ prefill_treadling:
         mov r1, #3
         str r1, [r0], #4
         mov r1, #4
-        str r1, [r0], #4
-        mov r1, #5
-        str r1, [r0], #4
-        mov r1, #6
-        str r1, [r0], #4
-        mov r1, #7
-        str r1, [r0], #4
-        mov r1, #8
         str r1, [r0], #4
 
 prefill_threading:
@@ -116,13 +108,13 @@ prefill_threading:
 
 prefill_tieup:
         ldr r0, =TIEUP
-        mov r1, #0b00110011
+        mov r1, #0b0011
         str r1, [r0], #4
-        mov r1, #0b01100110
+        mov r1, #0b0110
         str r1, [r0], #4
-        mov r1, #0b11001100
+        mov r1, #0b1100
         str r1, [r0], #4
-        mov r1, #0b10011001
+        mov r1, #0b1001
         str r1, [r0], #4
 
 draw_threading:
@@ -133,7 +125,7 @@ draw_threading:
         ldr r5, =THREADING
         
         // Starting x-coordinate
-        mov r6, #289
+        mov r6, #329
 
 draw_threading__loop:
         // Set the x-coordinate
@@ -158,7 +150,7 @@ draw_threading__loop:
    
 draw_treadling:
         // Treadling counter
-        mov r4, #8
+        mov r4, #4
         
         // Load the start of the treadling data
         ldr r5, =TREADLING
@@ -171,7 +163,7 @@ draw_treadling__loop:
         ldr r0, [r5]
         mov r2, #10
         mul r0, r0, r2
-        add r0, r0, #300
+        add r0, r0, #340
         
         // Set the y-coordinate
         mov r1, r6
@@ -211,7 +203,7 @@ draw_tieup__line:
         mov r8, #1
 
         // Starting x-coordinate
-        mov r9, #310
+        mov r9, #350
         
 draw_tieup__line_loop:
         // Check if the current bit is not enabled and skip to the
