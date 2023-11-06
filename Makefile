@@ -1,4 +1,3 @@
-.PHONY: debug
 
 all: main.bin
 	cargo run --manifest-path emulator/Cargo.toml
@@ -17,7 +16,7 @@ qemu: main.elf
 flash: main.bin
 	dfu-util -a 0 -s 0x08000000:leave -D main.bin
 
-debug:
+debug: main.bin
 	./debug.sh
 
 disassemble: main.bin
