@@ -160,10 +160,53 @@ draw_tieup__end:
         pop {lr}
         bx lr
 
-// Draws the drawdown weaving pattern.
+// Draws the drawdown weaving pattern based on the threading,
+// treadling and tie-up.
 draw_drawdown:
         push {lr}
-        push {r4-r10}
+        push {r4-r7}
+
+        // Number of tile columns
+        mov r4, #10
+
+        // Starting x-coordinate
+        mov r6, #329
+        
+draw_drawdown__column:
+        // Number of tile rows
+        mov r5, #4
+        
+        // Starting y-coordinate
+        mov r7, #60
+
+draw_drawdown__row:
+        mov r0, r6
+        mov r1, r7
+        bl draw_drawdown_tile
+
+        // Add the size of the tile to the y-coordinate.
+        add r7, r7, #40
+
+        // Continue until we reached the end of the column counter.
+        subs r5, r5, #1
+        bne draw_drawdown__row
+
+        // Subtract the size of the tile from the x-coordinate.
+        sub r6, r6, #40
+
+        // Continue until we reached the end of the row counter.
+        subs r4, r4, #1
+        bne draw_drawdown__column
+
+draw_drawdown__end:
+        pop {r4-r7}
+        pop {lr}
+        bx lr
+
+// Draws a single drawdown grid at starting point x (r0) and y (r1).
+draw_drawdown_tile:
+        push {lr}
+        push {r4-r11}
         
         // Counter for number of rows
         mov r4, #4
@@ -172,9 +215,12 @@ draw_drawdown:
         ldr r5, =TREADLING
 
         // Starting y-coordinate
-        mov r6, #60
+        mov r6, r1
+
+        // Starting x-coordinate
+        mov r11, r0
         
-draw_drawdown__loop_row:
+draw_drawdown_tile__loop_row:
         // Counter for number of columns
         mov r7, #4
         
@@ -193,10 +239,10 @@ draw_drawdown__loop_row:
         add r9, r9, r1
         ldr r9, [r9]
 
-        // Starting x-coordinate
-        mov r10, #329
+        // Reset the starting x-coordinate for the row.
+        mov r10, r11
 
-draw_drawdown__loop_column:
+draw_drawdown_tile__loop_column:
         // Create a bit mask and check if the tie-up is enabled for
         // that threading value.
         mov r1, #1
@@ -204,7 +250,7 @@ draw_drawdown__loop_column:
         sub r0, r0, #1 // Need to subtract 1 since the shift is zero based
         lsl r1, r1, r0
         tst r9, r1
-        beq draw_drawdown__loop_column_end
+        beq draw_drawdown_tile__loop_column_end
 
         // Draw rectangle
         mov r0, r10
@@ -213,7 +259,7 @@ draw_drawdown__loop_column:
         mov r3, #10
         bl draw_rectangle
 
-draw_drawdown__loop_column_end:
+draw_drawdown_tile__loop_column_end:
         // Move to the next threading column
         add r8, r8, #4
         
@@ -222,9 +268,9 @@ draw_drawdown__loop_column_end:
 
         // Continue for each row in the grid
         subs r7, r7, #1
-        bne draw_drawdown__loop_column
+        bne draw_drawdown_tile__loop_column
         
-draw_drawdown__loop_row_end:   
+draw_drawdown_tile__loop_row_end:   
         // Move to the next treadling
         add r5, r5, #4
 
@@ -233,9 +279,9 @@ draw_drawdown__loop_row_end:
         
         // Continue until we reached the end of the counter.
         subs r4, r4, #1
-        bne draw_drawdown__loop_row
+        bne draw_drawdown_tile__loop_row
 
-draw_drawdown__end:
-        pop {r4-r10}
+draw_drawdown_tile__end:
+        pop {r4-r11}
         pop {lr}
         bx lr
