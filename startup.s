@@ -86,13 +86,13 @@ draw_treadling_grid:
 
 prefill_treadling:
         ldr r0, =TREADLING
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #2
+        mov r1, #4
         str r1, [r0], #4
         mov r1, #3
         str r1, [r0], #4
-        mov r1, #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #1
         str r1, [r0], #4
 
 prefill_threading:

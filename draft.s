@@ -65,10 +65,11 @@ draw_treadling:
 
 draw_treadling__loop:
         // Set the x-coordinate
-        ldr r0, [r5]
+        mov r0, #389
+        ldr r1, [r5]
         mov r2, #10
-        mul r0, r0, r2
-        add r0, r0, #340
+        mul r1, r1, r2
+        sub r0, r0, r1
         
         // Set the y-coordinate
         mov r1, r6
@@ -250,7 +251,7 @@ draw_drawdown_tile__loop_column:
         sub r0, r0, #1 // Need to subtract 1 since the shift is zero based
         lsl r1, r1, r0
         tst r9, r1
-        beq draw_drawdown_tile__loop_column_end
+        bne draw_drawdown_tile__loop_column_end
 
         // Draw rectangle
         mov r0, r10
