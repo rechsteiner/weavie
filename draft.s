@@ -181,8 +181,11 @@ draw_drawdown__column:
         mov r7, #60
 
 draw_drawdown__row:
+        // Draw a 4x4 tile
         mov r0, r6
         mov r1, r7
+        mov r2, #4
+        mov r3, #4
         bl draw_drawdown_tile
 
         // Add the size of the tile to the y-coordinate.
@@ -191,6 +194,13 @@ draw_drawdown__row:
         // Continue until we reached the end of the column counter.
         subs r5, r5, #1
         bne draw_drawdown__row
+
+        // Draw a 4x1 tile at the bottom
+        mov r0, r6
+        mov r1, r7
+        mov r2, #1
+        mov r3, #4
+        bl draw_drawdown_tile
 
         // Subtract the size of the tile from the x-coordinate.
         sub r6, r6, #40
@@ -204,13 +214,14 @@ draw_drawdown__end:
         pop {lr}
         bx lr
 
-// Draws a single drawdown grid at starting point x (r0) and y (r1).
+// Draws a single drawdown grid at starting point x (r0) and y (r1)
+// with number of rows (r2) and columns (r3).
 draw_drawdown_tile:
         push {lr}
-        push {r4-r11}
+        push {r4-r12}
         
         // Counter for number of rows
-        mov r4, #4
+        mov r4, r2
         
         // Store the initial treadling address 
         ldr r5, =TREADLING
@@ -220,10 +231,13 @@ draw_drawdown_tile:
 
         // Starting x-coordinate
         mov r11, r0
+
+        // Number of columns
+        mov r12, r3
         
 draw_drawdown_tile__loop_row:
         // Counter for number of columns
-        mov r7, #4
+        mov r7, r12
         
         // Reset the threading address for each row
         ldr r8, =THREADING
@@ -283,6 +297,6 @@ draw_drawdown_tile__loop_row_end:
         bne draw_drawdown_tile__loop_row
 
 draw_drawdown_tile__end:
-        pop {r4-r11}
+        pop {r4-r12}
         pop {lr}
         bx lr
