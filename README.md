@@ -2,6 +2,12 @@
 
 ## Getting Started
 
+### Running in emulator
+
+```
+make
+```
+
 ### Running on hardware
 
 - Connect the BOOT0 (B0) pin to the 3.3V PIN. This enables the DFU bootloader mode.
@@ -10,12 +16,6 @@
 
 ```
 make flash
-```
-
-### Running in emulator
-
-```
-make
 ```
 
 ### Running in QEMU
@@ -63,6 +63,7 @@ Inspect memory address:
 ```
 p/x 0x40020800
 x $r2
+x/t $r1
 x/10x $r1
 x/20c $r1
 ```
