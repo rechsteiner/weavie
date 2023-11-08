@@ -15,7 +15,7 @@ draw_threading:
         push {r4-r6}
         
         // Threading counter
-        mov r4, #4
+        mov r4, #18
         
         // Load the start of the threading data
         ldr r5, =THREADING
@@ -55,7 +55,7 @@ draw_treadling:
         push {r4-r6}
         
         // Treadling counter
-        mov r4, #4
+        mov r4, #18
         
         // Load the start of the treadling data
         ldr r5, =TREADLING
@@ -168,14 +168,14 @@ draw_drawdown:
         push {r4-r7}
 
         // Number of tile columns
-        mov r4, #10
+        mov r4, #2
 
         // Starting x-coordinate
         mov r6, #329
         
 draw_drawdown__column:
         // Number of tile rows
-        mov r5, #4
+        mov r5, #1
         
         // Starting y-coordinate
         mov r7, #60
@@ -184,26 +184,19 @@ draw_drawdown__row:
         // Draw a 4x4 tile
         mov r0, r6
         mov r1, r7
-        mov r2, #4
-        mov r3, #4
+        mov r2, #18
+        mov r3, #18
         bl draw_drawdown_tile
 
         // Add the size of the tile to the y-coordinate.
-        add r7, r7, #40
+        add r7, r7, #180
 
         // Continue until we reached the end of the column counter.
         subs r5, r5, #1
         bne draw_drawdown__row
 
-        // Draw a 4x1 tile at the bottom
-        mov r0, r6
-        mov r1, r7
-        mov r2, #1
-        mov r3, #4
-        bl draw_drawdown_tile
-
         // Subtract the size of the tile from the x-coordinate.
-        sub r6, r6, #40
+        sub r6, r6, #180
 
         // Continue until we reached the end of the row counter.
         subs r4, r4, #1

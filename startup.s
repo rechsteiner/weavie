@@ -60,6 +60,7 @@ main:
         bl setup_display
         bl reset_graphics_buffer
 
+// TODO: Move into draw_threading function
 draw_threading_grid:
         mov r0, #9
         mov r1, #9
@@ -68,6 +69,7 @@ draw_threading_grid:
         mov r4, #10
         bl draw_grid
 
+// TODO: Move into draw_tieup function
 draw_tieup_grid:
         mov r0, #349
         mov r1, #9
@@ -76,11 +78,12 @@ draw_tieup_grid:
         mov r4, #10
         bl draw_grid
         
+// TODO: Move into draw_treadling function
 draw_treadling_grid:
         mov r0, #349
         mov r1, #59
         mov r2, #4
-        mov r3, #17
+        mov r3, #18
         mov r4, #10
         bl draw_grid
 
@@ -94,9 +97,65 @@ prefill_treadling:
         str r1, [r0], #4
         mov r1, #1
         str r1, [r0], #4
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
 
 prefill_threading:
         ldr r0, =THREADING
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
+        mov r1, #4
+        str r1, [r0], #4
+        mov r1, #1
+        str r1, [r0], #4
+        mov r1, #2
+        str r1, [r0], #4
+        mov r1, #3
+        str r1, [r0], #4
         mov r1, #4
         str r1, [r0], #4
         mov r1, #3
