@@ -13,17 +13,18 @@
 
 // Clear the frame buffer memory.
 reset_graphics_buffer:
+        push {lr}
         ldr r0, =FRBUF
-        ldr r1, =0x20017700
+        ldr r1, =3000 // (400*240)/8=3000 registers
         mov r2, #0
 
 reset_graphics_buffer__loop:
-        cmp r0, r1
-        bge reset_graphics_buffer__end
         str r2, [r0], #4
-        b reset_graphics_buffer__loop
+        subs r1, r1, #1
+        bne reset_graphics_buffer__loop
 
 reset_graphics_buffer__end:
+        pop {lr}
         bx lr
 
 // Draws a point at the given x (r0) and y (r1) coordinates.
