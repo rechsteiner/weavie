@@ -150,6 +150,12 @@ prefill_tieup:
         str r1, [r0], #4
 
 draw:
+        bl draw_logo
+        bl refresh_display
+
+        bl delay
+        
+        bl reset_graphics_buffer
         bl draw_threading_grid
         bl draw_threading
         bl draw_tieup_grid
