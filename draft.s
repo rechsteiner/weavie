@@ -4,10 +4,55 @@
 .section .text
 .include "constants.s"
 
+.global draw_threading_grid
 .global draw_threading
+.global draw_tieup_grid
 .global draw_tieup
+.global draw_treadling_grid
 .global draw_treadling
 .global draw_drawdown
+
+// TODO: Move into draw_threading function
+draw_threading_grid:
+        push {lr}
+        
+        mov r0, #9
+        mov r1, #9
+        mov r2, #33
+        mov r3, #4
+        mov r4, #10
+        bl draw_grid
+
+        pop {lr}
+        bx lr
+
+// TODO: Move into draw_tieup function
+draw_tieup_grid:
+        push {lr}
+        
+        mov r0, #349
+        mov r1, #9
+        mov r2, #4
+        mov r3, #4
+        mov r4, #10
+        bl draw_grid
+        
+        pop {lr}
+        bx lr
+        
+// TODO: Move into draw_treadling function
+draw_treadling_grid:
+        push {lr}
+        
+        mov r0, #349
+        mov r1, #59
+        mov r2, #4
+        mov r3, #18
+        mov r4, #10
+        bl draw_grid
+
+        pop {lr}
+        bx lr
 
 // Draws the threading grid.
 draw_threading:
