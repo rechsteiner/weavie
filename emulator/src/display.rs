@@ -1,3 +1,4 @@
+use colored::*;
 use winit::event_loop::EventLoopProxy;
 
 enum DisplayState {
@@ -28,7 +29,7 @@ impl Display {
         Display {
             state: DisplayState::Empty,
             data: vec![],
-            proxy: proxy
+            proxy
         }
     }
 
@@ -37,7 +38,7 @@ impl Display {
             DisplayState::Empty | DisplayState::Completed =>  {
                 match data {
                     0b00000001 => {
-                        println!("DISPLAY transfer begin");
+                        println!("{} transfer begin", "DISPLAY".green());
                         self.state = DisplayState::TransferLineStart;
                         self.data = vec![];
                     },
@@ -68,7 +69,7 @@ impl Display {
                         }
                     },
                     _ => {
-                        println!("DISPLAY unknown data");
+                        println!("{} unknown data", "DISPLAY".red());
                         self.data = vec![];
                         self.state = DisplayState::Empty;
                     }
@@ -77,12 +78,12 @@ impl Display {
             DisplayState::TransferEnd => {
                 match data {
                     0b00000000 => {
-                        println!("DISPLAY transfer completed");
+                        println!("{} transfer completed", "DISPLAY".green());
                         self.state = DisplayState::Completed;
                         self.proxy.send_event(DisplayEvent::Redraw).unwrap();
                     },
                     _ => {
-                        println!("unknown data");
+                        println!("{} unknown data", "DISPLAY".red());
                         self.data = vec![];
                         self.state = DisplayState::Empty;
                     }

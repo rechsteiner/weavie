@@ -10,4 +10,5 @@ unicorn-engine = "2.0.0-rc7"
 softbuffer = "0.3.3"
 winit = "0.28.1"
 udbserver = "0.1.0"
+colored = "2.0.4"
 

@@ -1,10 +1,10 @@
-use unicorn_engine::{unicorn_const::{Arch, Mode, Permission, MemType, HookType}, Unicorn};
-
 use crate::display::Display;
 
+use colored::*;
 use std::env;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
+use unicorn_engine::{unicorn_const::{Arch, Mode, Permission, MemType, HookType}, Unicorn};
 
 pub fn create_emulator(display: Arc<Mutex<Display>>) {
     let mut emulator = Unicorn::new(Arch::ARM, Mode::MCLASS | Mode::LITTLE_ENDIAN)
@@ -18,7 +18,7 @@ pub fn create_emulator(display: Arc<Mutex<Display>>) {
         .add_mem_hook(HookType::MEM_WRITE_UNMAPPED, 1, 0, move |_, memtype, address, size, value| {
             match memtype {
                 MemType::WRITE_UNMAPPED => {
-                    println!("Trying to write to unmapped memory at address: 0x{:X}, size: {}, value: 0x{:X}", address, size, value);
+                    println!("{} Trying to write to unmapped memory at address: 0x{:X}, size: {}, value: 0x{:X}", "ERROR".red(), address, size, value);
                     false
                 },
                 _ => true,
@@ -72,24 +72,39 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
     let start = 0x4000_0000;
     let end = 0xB000_0000;
 
+    let gpioc_odr = Arc::new(Mutex::new(0));
+    let spi_cr1 = Arc::new(Mutex::new(0));
+    let spi_dr = Arc::new(Mutex::new(0));
+
     let read_cb = {
+        let gpioc_odr_read = Arc::clone(&gpioc_odr);
+        let spi_cr1_read = Arc::clone(&spi_cr1);
+        let spi_dr_read = Arc::clone(&spi_dr);
+        
         move |_uc: &mut Unicorn<'_, ()>, addr, _size| {
-            // println!("read addr=0x{:08x} size={}", start + addr as u32, size);
-            // println!("read addr=0x{:08x}", addr);
-            
             match start + addr as u32 {
-                // SPI_DR (data register)
-                0x4000380C => {
-                    // TODO: Return data written previously
-                    // println!("SPI_DR read:{:02x?}", addr);
-                    0
+                0x40020814 => {
+                    let value = *gpioc_odr_read.lock().unwrap();
+                    println!("{} read: 0x{:08x?}", "GPIOC_ODR".magenta(), value);
+                    value
                 }
-                // SPI_SR (status register)
+                0x40003800 => {
+                    let value = *spi_cr1_read.lock().unwrap();
+                    println!("{} read: 0x{:08x?}", "SPI_CR1".blue(), value);
+                    value
+                }
+                0x4000380C => {
+                    let value = *spi_dr_read.lock().unwrap();
+                    println!("{} read: 0x{:08x?}", "SPI_DR".blue(), value);
+                    value
+                }
                 0x40003808 => {
+                    // SPI_SR (status register)
                     // Simulate transfer buffer empty
                     0b11
                 }
                 _ => {
+                    println!("{} addr: 0x{:08x}", "UNMAPPED".yellow(), start + addr as u32);
                     0
                 }
             }
@@ -97,20 +112,48 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
     };
 
     let write_cb = {
+        let gpioc_odr_write = Arc::clone(&gpioc_odr);
+        let spi_cr1_write = Arc::clone(&spi_cr1);
+        let spi_dr_write = Arc::clone(&spi_dr);
+        
         move |_uc: &mut Unicorn<'_, ()>, addr, _size, value| {
             match start + addr as u32 {
-                // GPIOC_ODR register
+                0x40023830 => {
+                    println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".magenta(), value);
+                }
+                0x40023840 => {
+                    println!("{} write: 0x{:08x?}", "RCC_APB1ENR".magenta(), value);
+                }
+                0x40020800 => {
+                    println!("{} write: 0x{:08x?}", "GPIOC_MODER".magenta(), value);
+                }
                 0x40020814 => {
-                    println!("GPIOC_ODR write: 0x{:02x?}", value);
-                },
-                // SPI_SR (status register)
+                    *gpioc_odr_write.lock().unwrap() = value;
+                    println!("{} write: 0x{:08x?}", "GPIOC_ODR".magenta(), value);
+                }
+                0x40020400 => {
+                    println!("{} write: 0x{:08x?}", "GPIOB_MODER".magenta(), value);
+                }
+                0x40020414 => {
+                    println!("{} write: 0x{:08x?}", "GPIOB_ODR".magenta(), value);
+                }
+                0x40020424 => {
+                    println!("{} write: 0x{:08x?}", "GPIOB_AFRH".magenta(), value);
+                }
+                0x40003800 => {
+                    *spi_cr1_write.lock().unwrap() = value;
+                    println!("{} write: 0x{:08x?}", "SPI_CR1".blue(), value);
+                }
                 0x4000380C => {
+                    // Send the data to the display
                     let mut display = display.lock().unwrap();
-                    println!("SPI_DR write: 0x{:02x?}", value);
                     display.receive(value as u8);
+                    
+                    *spi_dr_write.lock().unwrap() = value;
+                    println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
                 }
                 _ => {
-                    println!("write {:?} addr=0x{:08x}", value, start + addr as u32);
+                    println!("{} write: 0x{:08x?} addr=0x{:08x}", "UNMAPPED".yellow(), value, start + addr as u32);
                 }
             }
         }   
