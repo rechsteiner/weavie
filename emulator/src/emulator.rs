@@ -4,7 +4,10 @@ use colored::*;
 use std::env;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
-use unicorn_engine::{unicorn_const::{Arch, Mode, Permission, MemType, HookType}, Unicorn};
+use unicorn_engine::{
+    unicorn_const::{Arch, HookType, MemType, Mode, Permission},
+    Unicorn,
+};
 
 pub fn create_emulator(display: Arc<Mutex<Display>>) {
     let mut emulator = Unicorn::new(Arch::ARM, Mode::MCLASS | Mode::LITTLE_ENDIAN)
@@ -30,12 +33,10 @@ pub fn create_emulator(display: Arc<Mutex<Display>>) {
     let is_debug_mode = args.iter().any(|arg| arg == "debug");
 
     if is_debug_mode {
-        udbserver::udbserver(&mut emulator, 3333, 0x0)
-            .expect("failed to start udbserver");   
+        udbserver::udbserver(&mut emulator, 3333, 0x0).expect("failed to start udbserver");
     }
 
-    emulator
-        .emu_start(0x08000009, 0, 0, 0).unwrap();
+    emulator.emu_start(0x08000009, 0, 0, 0).unwrap();
 }
 
 fn map_flash_memory(emulator: &mut Unicorn<'_, ()>) {
@@ -49,7 +50,7 @@ fn map_flash_memory(emulator: &mut Unicorn<'_, ()>) {
     emulator
         .mem_map(0x08000000, size, Permission::ALL)
         .expect("failed to map code page");
-    
+
     emulator
         .mem_write(0x08000000, arm_code)
         .expect("failed to write instructions");
@@ -58,7 +59,7 @@ fn map_flash_memory(emulator: &mut Unicorn<'_, ()>) {
 fn map_ram_memory(emulator: &mut Unicorn<'_, ()>) {
     let sram_size = 0x20000;
     let sram_zeroes = vec![0_u8; sram_size as usize];
-    
+
     emulator
         .mem_map(0x20000000, sram_size, Permission::ALL)
         .expect("failed to map code page");
@@ -80,7 +81,7 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
         let gpioc_odr_read = Arc::clone(&gpioc_odr);
         let spi_cr1_read = Arc::clone(&spi_cr1);
         let spi_dr_read = Arc::clone(&spi_dr);
-        
+
         move |_uc: &mut Unicorn<'_, ()>, addr, _size| {
             match start + addr as u32 {
                 0x40020814 => {
@@ -104,7 +105,11 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
                     0b11
                 }
                 _ => {
-                    println!("{} addr: 0x{:08x}", "UNMAPPED".yellow(), start + addr as u32);
+                    println!(
+                        "{} addr: 0x{:08x}",
+                        "UNMAPPED".yellow(),
+                        start + addr as u32
+                    );
                     0
                 }
             }
@@ -115,7 +120,7 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
         let gpioc_odr_write = Arc::clone(&gpioc_odr);
         let spi_cr1_write = Arc::clone(&spi_cr1);
         let spi_dr_write = Arc::clone(&spi_dr);
-        
+
         move |_uc: &mut Unicorn<'_, ()>, addr, _size, value| {
             match start + addr as u32 {
                 0x40023830 => {
@@ -148,18 +153,28 @@ fn map_peripherals(emulator: &mut Unicorn<'_, ()>, display: Arc<Mutex<Display>>)
                     // Send the data to the display
                     let mut display = display.lock().unwrap();
                     display.receive(value as u8);
-                    
+
                     *spi_dr_write.lock().unwrap() = value;
                     println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
                 }
                 _ => {
-                    println!("{} write: 0x{:08x?} addr=0x{:08x}", "UNMAPPED".yellow(), value, start + addr as u32);
+                    println!(
+                        "{} write: 0x{:08x?} addr=0x{:08x}",
+                        "UNMAPPED".yellow(),
+                        value,
+                        start + addr as u32
+                    );
                 }
             }
-        }   
+        }
     };
 
     emulator
-        .mmio_map(start as u64, (end-start) as usize, Some(read_cb), Some(write_cb))
+        .mmio_map(
+            start as u64,
+            (end - start) as usize,
+            Some(read_cb),
+            Some(write_cb),
+        )
         .expect("Failed to mmio_map()");
 }

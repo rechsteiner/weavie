@@ -2,10 +2,10 @@ use crate::display::{Display, DisplayEvent};
 
 use std::num::NonZeroU32;
 use std::sync::{Arc, Mutex};
+use winit::dpi::LogicalSize;
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{WindowBuilder, WindowLevel};
-use winit::dpi::LogicalSize;
 
 pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Display>>) {
     let window = WindowBuilder::new()
@@ -16,7 +16,7 @@ pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Dis
         .with_active(true)
         .build(&event_loop)
         .unwrap();
-    
+
     let context = unsafe { softbuffer::Context::new(&window) }.unwrap();
     let mut surface = unsafe { softbuffer::Surface::new(&context, &window) }.unwrap();
 
@@ -65,12 +65,12 @@ pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Dis
                         }
                     }
                 }
-                
+
                 buffer.present().unwrap();
             }
             Event::UserEvent(DisplayEvent::Redraw) => {
                 window.request_redraw();
-            },
+            }
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 window_id,
@@ -81,5 +81,3 @@ pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Dis
         }
     });
 }
-
-
