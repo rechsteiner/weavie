@@ -163,11 +163,7 @@ draw:
         bl draw_treadling_grid
         bl draw_treadling
         bl draw_drawdown
-        
-refresh:
         bl refresh_display
         
 loop:
-        bl delay
-        bl refresh_display
         b loop

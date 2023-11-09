@@ -97,7 +97,17 @@ impl Display {
                                 pixel_buffer.push(pixel);
                             }
                         }
-                        
+
+                        // FIXME: The window does not seem to update initially without
+                        // calling update_with_buffer a few times.
+                        self.window
+                            .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
+                            .unwrap();
+
+                        self.window
+                            .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
+                            .unwrap();
+
                         self.window
                             .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
                             .unwrap();
