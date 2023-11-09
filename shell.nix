@@ -6,7 +6,6 @@ mkShell {
     gcc-arm-embedded-12
     dfu-util
 
-    unicorn
     cmake
     libiconv
     rustc

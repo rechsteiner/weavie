@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-unicorn-engine = "2.0.0-rc7"
+unicorn-engine = "2.0.1"
 softbuffer = "0.3.3"
 winit = "0.28.1"
-udbserver = "0.1.0"
+udbserver = { git = "https://github.com/rechsteiner/udbserver.git", branch = "master" }
 colored = "2.0.4"
 
