@@ -1,4 +1,4 @@
-use minifb::{Window, WindowOptions};
+use winit::event_loop::EventLoopProxy;
 
 enum DisplayState {
     Empty,
@@ -9,32 +9,26 @@ enum DisplayState {
     TransferEnd
 }
 
+#[derive(Debug)]
+pub enum DisplayEvent {
+    Redraw,
+}
+
 pub struct Display {
     state: DisplayState,
-    data: Vec<u8>,
-    window: Window
+    pub data: Vec<u8>,
+    proxy: EventLoopProxy<DisplayEvent>
 }
 
 impl Display {
     const WIDTH: usize = 400;
     const HEIGHT: usize = 240;
     
-    pub fn new() -> Self {
-        let window = Window::new(
-            "Weavie",
-            Self::WIDTH,
-            Self::HEIGHT,
-            WindowOptions {
-                topmost: true,
-                ..WindowOptions::default()
-            },
-        )
-        .expect("failed to create window");
-        
+    pub fn new(proxy: EventLoopProxy<DisplayEvent>) -> Self {
         Display {
             state: DisplayState::Empty,
             data: vec![],
-            window
+            proxy: proxy
         }
     }
 
@@ -56,7 +50,7 @@ impl Display {
                 self.state = DisplayState::TransferLineData(data);
             },
             DisplayState::TransferLineData(line) => {
-                self.data.push(data);
+                self.data.push(data.reverse_bits());
                 
                 if self.data.len() % (Self::WIDTH / 8) == 0 {
                     self.state = DisplayState::TransferLineEnd(line);
@@ -85,32 +79,7 @@ impl Display {
                     0b00000000 => {
                         println!("DISPLAY transfer completed");
                         self.state = DisplayState::Completed;
-
-                        let mut pixel_buffer: Vec<u32> = Vec::new();
-
-                        for &byte in self.data.iter() {
-                            for bit_index in 0..8 {
-                                 // Isolate each bit
-                                let bit = (byte >> bit_index) & 1;
-                                 // If bit is set, pixel is white-ish or black
-                                let pixel = if bit == 1 { 0xDDDDDDDD } else { 0x00000000 };
-                                pixel_buffer.push(pixel);
-                            }
-                        }
-
-                        // FIXME: The window does not seem to update initially without
-                        // calling update_with_buffer a few times.
-                        self.window
-                            .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
-                            .unwrap();
-
-                        self.window
-                            .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
-                            .unwrap();
-
-                        self.window
-                            .update_with_buffer(&pixel_buffer, Self::WIDTH, Self::HEIGHT)
-                            .unwrap();
+                        self.proxy.send_event(DisplayEvent::Redraw).unwrap();
                     },
                     _ => {
                         println!("unknown data");

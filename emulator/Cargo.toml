@@ -1,5 +1,5 @@
 [package]
-name = "weavie-emulator"
+name = "weavie"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 unicorn-engine = "2.0.0-rc7"
-minifb = "0.25"
+softbuffer = "0.3.3"
+winit = "0.28.1"
 udbserver = "0.1.0"
 
