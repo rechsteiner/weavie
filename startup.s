@@ -156,11 +156,8 @@ draw:
         bl delay
         
         bl reset_drawing
-        bl draw_threading_grid
         bl draw_threading
-        bl draw_tieup_grid
         bl draw_tieup
-        bl draw_treadling_grid
         bl draw_treadling
         bl draw_drawdown
         bl refresh_display

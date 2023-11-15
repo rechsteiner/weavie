@@ -12,52 +12,18 @@
 .global draw_treadling
 .global draw_drawdown
 
-// TODO: Move into draw_threading function
-draw_threading_grid:
+// Draws the threading grid.
+draw_threading:
         push {lr}
-        
+        push {r4-r6}
+
+        // Draw the grid behind.
         mov r0, #9
         mov r1, #9
         mov r2, #33
         mov r3, #4
         mov r4, #10
         bl draw_grid
-
-        pop {lr}
-        bx lr
-
-// TODO: Move into draw_tieup function
-draw_tieup_grid:
-        push {lr}
-        
-        mov r0, #349
-        mov r1, #9
-        mov r2, #4
-        mov r3, #4
-        mov r4, #10
-        bl draw_grid
-        
-        pop {lr}
-        bx lr
-        
-// TODO: Move into draw_treadling function
-draw_treadling_grid:
-        push {lr}
-        
-        mov r0, #349
-        mov r1, #59
-        mov r2, #4
-        mov r3, #18
-        mov r4, #10
-        bl draw_grid
-
-        pop {lr}
-        bx lr
-
-// Draws the threading grid.
-draw_threading:
-        push {lr}
-        push {r4-r6}
         
         // Threading counter
         mov r4, #18
@@ -98,6 +64,14 @@ draw_threading__end:
 draw_treadling:
         push {lr}
         push {r4-r6}
+
+        // Draw the grid behind.
+        mov r0, #349
+        mov r1, #59
+        mov r2, #4
+        mov r3, #18
+        mov r4, #10
+        bl draw_grid
         
         // Treadling counter
         mov r4, #18
@@ -140,6 +114,14 @@ draw_treadling__end:
 draw_tieup:
         push {lr}
         push {r4-r11}
+
+        // Draw the grid behind.
+        mov r0, #349
+        mov r1, #9
+        mov r2, #4
+        mov r3, #4
+        mov r4, #10
+        bl draw_grid
         
         // Load the start of the tie-up data
         ldr r5, =TIEUP
