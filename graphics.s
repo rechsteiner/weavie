@@ -4,28 +4,12 @@
 .section .text
 .include "constants.s"
 
-.global reset_graphics_buffer
 .global draw_point
 .global draw_horizontal_line
 .global draw_vertical_line
 .global draw_rectangle
 .global draw_grid
-
-// Clear the frame buffer memory.
-reset_graphics_buffer:
-        push {lr}
-        ldr r0, =FRBUF
-        ldr r1, =3000 // (400*240)/8=3000 registers
-        mov r2, #0
-
-reset_graphics_buffer__loop:
-        str r2, [r0], #4
-        subs r1, r1, #1
-        bne reset_graphics_buffer__loop
-
-reset_graphics_buffer__end:
-        pop {lr}
-        bx lr
+.global reset_drawing
 
 // Draws a point at the given x (r0) and y (r1) coordinates.
 draw_point:
@@ -217,5 +201,21 @@ draw_grid__horizonal:
 
 draw_grid__end:
         pop {r5-r12}
+        pop {lr}
+        bx lr
+
+// Clear the frame buffer memory.
+reset_drawing:
+        push {lr}
+        ldr r0, =FRBUF
+        ldr r1, =3000 // (400*240)/8=3000 registers
+        mov r2, #0
+
+reset_drawing__loop:
+        str r2, [r0], #4
+        subs r1, r1, #1
+        bne reset_drawing__loop
+
+reset_drawing__end:
         pop {lr}
         bx lr

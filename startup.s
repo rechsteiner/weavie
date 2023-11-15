@@ -58,7 +58,7 @@ _reset_handler:
         
 main:
         bl setup_display
-        bl reset_graphics_buffer
+        bl reset_drawing
 
 prefill_treadling:
         ldr r0, =TREADLING
@@ -155,7 +155,7 @@ draw:
 
         bl delay
         
-        bl reset_graphics_buffer
+        bl reset_drawing
         bl draw_threading_grid
         bl draw_threading
         bl draw_tieup_grid
