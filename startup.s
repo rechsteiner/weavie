@@ -152,14 +152,8 @@ prefill_tieup:
 draw:
         bl draw_logo
         bl refresh_display
-
         bl delay
-        
-        bl reset_drawing
-        bl draw_threading
-        bl draw_tieup
-        bl draw_treadling
-        bl draw_drawdown
+        bl draw_weaving_draft
         bl refresh_display
         
 loop:

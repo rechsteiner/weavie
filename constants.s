@@ -29,13 +29,17 @@
 .equ SPI_SR, SPI2 + 0x08
 .equ SPI_DR, SPI2 + 0x0C
 
+// SHARP Memory Display resolution.
+.equ DISPLAY_WIDTH, 400
+.equ DISPLAY_HEIGHT, 240
+
 // The frame buffer is used to store the memory for each pixel in the
 // display. The base address is just a place in SRAM where we can fit
 // all the bits. The display has 400x240 pixels, so the length of each
 // row (FRBUF_BYTES_PER_LINE) is 400/8=50 and it has 240 rows (FRBUF_LINES).
 .equ FRBUF, 0x20000000
-.equ FRBUF_BYTES_PER_LINE, 50
-.equ FRBUF_LINES, 240
+.equ FRBUF_BYTES_PER_LINE, DISPLAY_WIDTH/8
+.equ FRBUF_LINES, DISPLAY_HEIGHT
 
 // Weaving draft states.
 .equ THREADING, 0x20002EE0
