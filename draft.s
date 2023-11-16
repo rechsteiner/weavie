@@ -71,9 +71,6 @@ draw_weaving_draft:
         mov r2, #GRID_SIZE
         sdiv r3, r3, r2
         
-        // TODO: Round-up result of sdiv instead.
-        add r3, r3, #1 
-        
         // Width 
         mov r2, r5
         bl draw_treadling
@@ -327,7 +324,6 @@ draw_drawdown__column:
         mov r0, #DISPLAY_WIDTH
         subs r1, r0, r4
         subs r0, r0, r1
-        subs r0, r0, #GRID_INSETS
 
         // Branch to the end of the draw-down drawing if the
         // subtractions caused an overflow.
@@ -350,7 +346,6 @@ draw_drawdown__column_row:
         // y-coordinate (r7).
         mov r0, #DISPLAY_HEIGHT
         subs r0, r0, r7
-        subs r0, r0, #GRID_INSETS
         
         // Branch to the end of the column drawing if the subtractions
         // caused an overflow.
