@@ -29,19 +29,17 @@ draw_weaving_draft:
         sub r6, r6, r1
         sub r6, r6, #GRID_INSETS
         
-        // ==================================================
-        // Threading
-        // ==================================================
+        // Draw threading
         mov r2, #DISPLAY_WIDTH
         sub r2, r2, r1
-        sub r2, r2, #GRID_INSETS // Leading
         sub r2, r2, #GRID_INSETS // Trailing
-        sub r2, r2, #GRID_SIZE   // Spacing
+        sub r2, r2, #GRID_INSETS // Spacing
         mov r1, #GRID_SIZE
         sdiv r2, r2, r1
 
+        // TODO: Draw from traling to leading instead.
         // Start x
-        mov r0, #GRID_INSETS
+        mov r0, #0
         
         // Start y
         mov r1, #GRID_INSETS
@@ -49,19 +47,14 @@ draw_weaving_draft:
         mov r3, r4
         bl draw_threading
 
-        // ==================================================
-        // Tie-up
-        // ==================================================
+        // Draw tie-up
         mov r0, r6
         mov r1, #GRID_INSETS
         mov r2, r4
         mov r3, r5
         bl draw_tieup
 
-        // ==================================================
-        // Treadling
-        // ==================================================
-        
+        // Draw treadling
         // Start x
         mov r0, r6
         
@@ -70,34 +63,33 @@ draw_weaving_draft:
         mov r1, r4
         mul r1, r1, r2
         add r1, r1, #GRID_INSETS // Leading
-        add r1, r1, #GRID_SIZE   // Spacing
+        add r1, r1, #GRID_INSETS // Spacing
         
         // Height
         mov r3, #DISPLAY_HEIGHT
         sub r3, r3, r1
-        sub r3, r3, #GRID_INSETS // Trailing
         mov r2, #GRID_SIZE
         sdiv r3, r3, r2
+        
+        // TODO: Round-up result of sdiv instead.
+        add r3, r3, #1 
         
         // Width 
         mov r2, r5
         bl draw_treadling
 
-        // ==================================================
-        // Draw-down
-        // ==================================================
-        
+        // Draw draw-down
         // Start x
         mov r0, r6
-        sub r0, #GRID_SIZE // Spacing
-        sub r0, #GRID_SIZE // ?
+        sub r0, #GRID_INSETS // Spacing
+        sub r0, #GRID_SIZE   // ?
 
         // Start y
         mov r2, #GRID_SIZE
         mov r1, r4
         mul r1, r1, r2
         add r1, r1, #GRID_INSETS // Leading
-        add r1, r1, #GRID_SIZE   // Spacing
+        add r1, r1, #GRID_INSETS // Spacing
         
         bl draw_drawdown
 
@@ -319,69 +311,122 @@ draw_drawdown:
         push {lr}
         push {r4-r11}
 
-        // Starting x-coordinate
-        mov r6, r0
-
-        // Starting y-coordinate
-        mov r8, r1
-        
-        // Tile size
-        mov r9, #18
-
-        // Number of tile columns
-        mov r1, #DISPLAY_WIDTH
-        sub r2, r1, r6
-        sub r1, r1, r2
-        sub r1, r1, #GRID_INSETS // TODO: Pass in as parameters
-        mov r0, #GRID_SIZE
-        mul r0, r0, r9
-        sdiv r1, r1, r0
-        mov r4, r1
-        
-draw_drawdown__column:
-        // Number of tile rows
-        mov r1, #DISPLAY_HEIGHT
-        sub r1, r1, r8
-        sub r1, r1, #GRID_INSETS // TODO: Pass in as parameters
-        mov r0, #GRID_SIZE
-        mul r0, r0, r9
-        sdiv r1, r1, r0
+        // Store starting x and y-coordinates.
+        mov r4, r0
         mov r5, r1
 
-        // Skip to the end if the number of tiles is zero.
-        cmp r5, #0
-        beq draw_drawdown__end
-          
-        // Reset the y-coordinate for each column.
-        mov r7, r8
+        // Weaving pattern size (max tile size).
+        mov r6, #18
 
-draw_drawdown__row:
-        // Draw a tile.
-        mov r0, r6
+draw_drawdown__column:
+        // Reset the current y-coordinate for each column.
+        mov r7, r5
+        
+        // Calculate the remaining width based on the current
+        // x-coordinate (r4).
+        mov r0, #DISPLAY_WIDTH
+        subs r1, r0, r4
+        subs r0, r0, r1
+        subs r0, r0, #GRID_INSETS
+
+        // Branch to the end of the draw-down drawing if the
+        // subtractions caused an overflow.
+        bmi draw_drawdown__end
+        
+        // Store the weaving pattern size.
+        mov r1, r6
+        bl draw_drawdown_remaining_size
+
+        // Keep the remaining width in a separate register so we can
+        // subtract it from the x-coordinate after drawing the tile.
+        mov r9, r0
+
+        // Skip to the end if the remaining width is zero.
+        cmp r9, #0
+        beq draw_drawdown__end
+
+draw_drawdown__column_row:
+        // Calculate the remaining height based on the current
+        // y-coordinate (r7).
+        mov r0, #DISPLAY_HEIGHT
+        subs r0, r0, r7
+        subs r0, r0, #GRID_INSETS
+        
+        // Branch to the end of the column drawing if the subtractions
+        // caused an overflow.
+        bmi draw_drawdown__column_end
+
+        // Store the weaving pattern size.
+        mov r1, r6
+        bl draw_drawdown_remaining_size
+
+        // Skip to the end if the remaining height is zero.
+        cmp r0, #0
+        beq draw_drawdown__column_end
+
+        // Keep the remaining height in a separate register so we can
+        // append it to the y-coordinate after drawing the tile.
+        mov r8, r0
+
+        // Draw the single pattern tile.
+        mov r0, r4
         mov r1, r7
         mov r2, r9
-        mov r3, r9
+        mov r3, r8
         bl draw_drawdown_tile
 
-        // Add the size of the tile to the y-coordinate.
-        mov r10, r9
-        mov r11, #GRID_SIZE
-        mul r10, r10, r11
-        add r7, r7, r10
+        // Add the height of the tile to the y-coordinate so we move
+        // down to the next "row".
+        mov r0, r8
+        mov r1, #GRID_SIZE
+        mul r0, r0, r1
+        add r7, r7, r0
 
-        // Continue until we reached the end of the column counter.
-        subs r5, r5, #1
-        bne draw_drawdown__row
+        b draw_drawdown__column_row
 
-        // Subtract the size of the tile from the x-coordinate.
-        sub r6, r6, r10
-
-        // Continue until we reached the end of the row counter.
-        subs r4, r4, #1
-        bne draw_drawdown__column
+draw_drawdown__column_end:
+        // Subtract the width of the tile to the x-coordinate so we
+        // move down to the previous "column".
+        mov r0, r9
+        mov r1, #GRID_SIZE
+        mul r0, r0, r1
+        sub r4, r4, r0
+        
+        b draw_drawdown__column
 
 draw_drawdown__end:
         pop {r4-r11}
+        pop {lr}
+        bx lr
+
+// Returns the remaining tile size for the given size (r0) 
+draw_drawdown_remaining_size:
+        push {lr}
+
+        // Weaving pattern size (max tile size).
+        mov r2, r1
+
+        // Divide the remaining height on the grid size to see how
+        // many rectangles we can fit.
+        mov r1, #GRID_SIZE
+        sdiv r1, r0, r1
+
+        // Want to draw a tile that is as tall as the treadling
+        // pattern, or use the minimum remaining grid size. Compares
+        // against the max tile size and chooses the smallest one.
+        cmp r2, r1
+        bgt draw_drawdown_remaining_size__remaining_size_smaller_then_max_size
+        b draw_drawdown_remaining_size__end
+
+draw_drawdown_remaining_size__remaining_size_smaller_then_max_size:
+        // Return the remaining height as the column height, which in
+        // this case is smaller then the max pattern size.
+        mov r0, r1
+
+draw_drawdown_remaining_size__end:
+        // Return the default pattern size.
+        mov r0, r2
+        
         pop {lr}
         bx lr
 
@@ -390,22 +435,22 @@ draw_drawdown__end:
 draw_drawdown_tile:
         push {lr}
         push {r4-r12}
+
+        // Starting x-coordinate
+        mov r11, r0
         
+        // Starting y-coordinate
+        mov r6, r1
+
         // Counter for number of rows
         mov r4, r2
+        
+        // Number of columns
+        mov r12, r3
         
         // Store the initial treadling address 
         ldr r5, =TREADLING
 
-        // Starting y-coordinate
-        mov r6, r1
-
-        // Starting x-coordinate
-        mov r11, r0
-
-        // Number of columns
-        mov r12, r3
-        
 draw_drawdown_tile__loop_row:
         // Counter for number of columns
         mov r7, r12

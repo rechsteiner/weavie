@@ -14,7 +14,19 @@
 // Draws a point at the given x (r0) and y (r1) coordinates.
 draw_point:
         push {lr}
-        push {r3-r7}
+        push {r4-r7}
+
+        // Skip drawing if the point is outside the bounds.
+        mov r2, #DISPLAY_WIDTH
+        sub r2, r2, #1
+        cmp r0, r2
+        bgt draw_point__end
+
+        // Skip drawing if the point is outside the bounds.
+        mov r2, #DISPLAY_HEIGHT
+        sub r2, r2, #1
+        cmp r1, r2
+        bgt draw_point__end
 
         // Load frame buffer start address into r4
         ldr r3, =FRBUF
@@ -41,7 +53,8 @@ draw_point:
         orr r5, r4       // OR the mask with the current byte to set the pixel
         str r5, [r3]     // Store the modified byte back to the frame buffer
 
-        pop {r3-r7}
+draw_point__end:
+        pop {r4-r7}
         pop {lr}
         bx lr
 
@@ -60,11 +73,6 @@ draw_horizontal_line:
         mov r6, r2
 
 draw_horizontal_line__loop:
-        // Check if x-coordinate is beyond screen bounds
-        ldr r3, =399
-        cmp r4, r3
-        bhi draw_horizontal_line__end
-
         // Set up parameters for draw_point (x: r4, y: r5)
         mov r0, r4
         mov r1, r5
@@ -97,11 +105,6 @@ draw_vertical_line:
         mov r6, r2
 
 draw_vertical_line__loop:
-        // Check if x-coordinate is beyond screen bounds
-        ldr r3, =239
-        cmp r5, r3
-        bhi draw_vertical_line__end
-
         // Set up parameters for draw_point (x: r4, y: r5)
         mov r0, r4
         mov r1, r5
