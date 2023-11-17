@@ -6,19 +6,21 @@
 
 .global draw_weaving_draft
 
-.equ GRID_INSETS, 8
-.equ GRID_SIZE, 8
+.equ GRID_INSETS, 6
+.equ GRID_SIZE, 6
 
 // Draws the entire weaving draft.
 draw_weaving_draft:
         push {lr}
+        push {r4-r9}
 
+        // Reset the graphics buffer.
         bl reset_drawing
 
         // Threading count
         mov r4, #4
 
-        // Treadling count
+        // Treadling count.
         mov r5, #4
 
         // Starting x-coordinate for tie-up and treadling.
@@ -28,33 +30,46 @@ draw_weaving_draft:
         mov r6, #DISPLAY_WIDTH
         sub r6, r6, r1
         sub r6, r6, #GRID_INSETS
-        
-        // Draw threading
-        mov r2, #DISPLAY_WIDTH
-        sub r2, r2, r1
-        sub r2, r2, #GRID_INSETS // Trailing
-        sub r2, r2, #GRID_INSETS // Spacing
-        mov r1, #GRID_SIZE
-        sdiv r2, r2, r1
 
-        // TODO: Draw from traling to leading instead.
-        // Start x
-        mov r0, #0
-        
-        // Start y
-        mov r1, #GRID_INSETS
+        // Starting y-coordinate for threading and tie-up.
+        mov r7, #GRID_INSETS
+
+draw_weaving_draft__threading:
         // Width
+        mov r2, r6
+        sub r2, r2, #GRID_INSETS // Spacing
+        mov r3, #GRID_SIZE
+        sdiv r2, r2, r3
+        
+        // Start x
+        mov r0, r6
+        sub r0, r0, #GRID_INSETS // Spacing
+        mov r1, r2
+        mov r3, #GRID_SIZE
+        mul r1, r1, r3
+        sub r0, r0, r1
+
+        // Start y
+        mov r1, r7
+
+        // Height
         mov r3, r4
+        
         bl draw_threading
 
-        // Draw tie-up
+draw_weaving_draft__tieup:
+        // Start x
         mov r0, r6
-        mov r1, #GRID_INSETS
-        mov r2, r4
-        mov r3, r5
+        // Start y
+        mov r1, r7
+        // Width
+        mov r2, r5
+        // Height
+        mov r3, r4
+        
         bl draw_tieup
 
-        // Draw treadling
+draw_weaving_draft__treadling:
         // Start x
         mov r0, r6
         
@@ -62,7 +77,7 @@ draw_weaving_draft:
         mov r2, #GRID_SIZE
         mov r1, r4
         mul r1, r1, r2
-        add r1, r1, #GRID_INSETS // Leading
+        add r1, r1, #GRID_INSETS // Top
         add r1, r1, #GRID_INSETS // Spacing
         
         // Height
@@ -73,9 +88,10 @@ draw_weaving_draft:
         
         // Width 
         mov r2, r5
+        
         bl draw_treadling
 
-        // Draw draw-down
+draw_weaving_draft__drawdown:   
         // Start x
         mov r0, r6
         sub r0, #GRID_INSETS // Spacing
@@ -90,7 +106,8 @@ draw_weaving_draft:
         
         bl draw_drawdown
 
-draw_draft__end:
+draw_weaving_draft__end:
+        pop {r4-r9}
         pop {lr}
         bx lr
 
