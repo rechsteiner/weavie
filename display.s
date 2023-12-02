@@ -109,6 +109,7 @@ setup_display__end:
 // Reads the frame buffer from memory and transfer it over SPI.
 refresh_display:
         push {lr}
+        push {r4-r5}
         
 // Begin SPI transaction by setting CS high (SHARP display is active
 // high) and SPE to 1.
@@ -191,6 +192,7 @@ refresh_display__end_transaction:
         bl disable_spi
         
 refresh_display__end:
+        pop {r4-r5}
         pop {lr}
         bx lr
 
