@@ -152,6 +152,9 @@ impl Emulator<'_> {
                         *spi_dr_write.lock().unwrap() = value;
                         println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
                     }
+                    0x40010000 => {
+                        println!("{}: 0b{:08b}", "DEBUG".yellow(), value);
+                    }
                     _ => {
                         println!(
                             "{} write: 0x{:08x?} addr=0x{:08x}",

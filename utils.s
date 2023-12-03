@@ -5,6 +5,7 @@
 .section .text
 
 .global delay
+.global debug
 
 // Adds a delay by adding a large number into register r2 and
 // decrements it until it hits zero.
@@ -14,4 +15,11 @@ delay:
 delay_decrement:
         subs r2, #0x0001
         bne delay_decrement
+        bx lr
+
+debug:
+        push {r4}
+        ldr r4, =0x40010000
+        str r0, [r4]
+        pop {r4}
         bx lr
