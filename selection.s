@@ -72,6 +72,16 @@ handle_input__select:
         ldr r2, [r2]
         add r2, r2, #1
         str r2, [r0]
+
+        // Check if the selected x-position is larger than the
+        // threading pattern count and increase it.
+        ldr r1, [r1]
+        ldr r2, =THREADING_PATTERN_COUNT
+        ldr r3, [r2]
+        cmp r1, r3
+        add r1, r1, #1
+        it eq
+        streq r1, [r2]
         
         // Set the return value to true.
         mov r0, #1
@@ -81,6 +91,17 @@ handle_input__down:
         // Add one to the selected y-position.
         ldr r1, =SELECTED_Y
         ldr r2, [r1]
+
+        // Load the threading count and compare it with the current
+        // position. If it's equal we don't move the further down.
+        ldr r3, =THREADING_SHAFT_COUNT
+        ldr r3, [r3]
+        sub r3, r3, #1
+        cmp r2, r3
+        beq handle_input__end
+
+        // If it's smaller then the threading shaft count we move the
+        // selection down.
         add r2, r2, #1
         str r2, [r1]
 
@@ -118,10 +139,20 @@ handle_input__forward:
         
 handle_input__backward:
         // Add one to the selected x-position.
-        ldr r2, =SELECTED_X
-        ldr r3, [r2]
-        add r3, r3, #1
-        str r3, [r2]
+        ldr r1, =SELECTED_X
+        ldr r2, [r1]
+
+        // Load the threading count and compare it with the current
+        // position. If it's equal we don't move the further back.
+        ldr r3, =THREADING_PATTERN_COUNT
+        ldr r3, [r3]
+        cmp r2, r3
+        beq handle_input__end
+
+        // If it's smaller then the threading pattern count we move
+        // the selection backward.
+        add r2, r2, #1
+        str r2, [r1]
 
         // Set the return value to true.
         mov r0, #1
@@ -176,6 +207,14 @@ prefill_pattern__treadling:
         str r1, [r0], #4
 
 prefill_pattern__threading:
+        ldr r0, =THREADING_SHAFT_COUNT
+        mov r1, #4
+        str r1, [r0]
+        
+        ldr r0, =THREADING_PATTERN_COUNT
+        mov r1, #18
+        str r1, [r0]
+        
         ldr r0, =THREADING
         mov r1, #4
         str r1, [r0], #4

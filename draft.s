@@ -17,8 +17,9 @@ draw_weaving_draft:
         // Reset the graphics buffer.
         bl reset_drawing
 
-        // Threading count
-        mov r4, #4
+        // Number of shafts (threading height).
+        ldr r4, =THREADING_SHAFT_COUNT
+        ldr r4, [r4]
 
         // Treadling count.
         mov r5, #4
@@ -141,8 +142,9 @@ draw_threading:
         mov r4, #GRID_SIZE
         bl draw_grid
         
-        // Threading counter
-        mov r4, #18
+        // Threading pattern width.
+        ldr r4, =THREADING_PATTERN_COUNT
+        ldr r4, [r4]
         
         // Load the start of the threading data
         ldr r5, =THREADING
@@ -173,7 +175,7 @@ draw_threading__loop:
         bl draw_rectangle
 
         // Move to the next threading data (4 bytes ahead).
-        add r5, r5, #4
+        add r5, r5, #BYTES_PER_REG
 
         // Move the x-coordinate to the previous grid column.
         sub r6, r6, #GRID_SIZE
@@ -341,7 +343,8 @@ draw_drawdown:
         mov r5, r1
 
         // Weaving pattern size (max tile size).
-        mov r6, #18
+        ldr r6, =THREADING_PATTERN_COUNT
+        ldr r6, [r6]
 
 draw_drawdown__column:
         // Reset the current y-coordinate for each column.
