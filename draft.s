@@ -336,15 +336,19 @@ draw_tieup__end:
 // repeats until the end of the screen.
 draw_drawdown:
         push {lr}
-        push {r4-r11}
+        push {r4-r12}
 
         // Store starting x and y-coordinates.
         mov r4, r0
         mov r5, r1
 
-        // Weaving pattern size (max tile size).
+        // Threading pattern count (tile width).
         ldr r6, =THREADING_PATTERN_COUNT
         ldr r6, [r6]
+
+        // Treadling pattern count (tile height).
+        // TODO: Replace with dynamic value
+        mov r12, #14
 
 draw_drawdown__column:
         // Reset the current y-coordinate for each column.
@@ -360,7 +364,7 @@ draw_drawdown__column:
         // subtractions caused an overflow.
         bmi draw_drawdown__end
         
-        // Store the weaving pattern size.
+        // Store the treadling pattern count (tile width).
         mov r1, r6
         bl draw_drawdown_remaining_size
 
@@ -382,8 +386,8 @@ draw_drawdown__column_row:
         // caused an overflow.
         bmi draw_drawdown__column_end
 
-        // Store the weaving pattern size.
-        mov r1, r6
+        // Store the threading pattern count (tile height).
+        mov r1, r12
         bl draw_drawdown_remaining_size
 
         // Skip to the end if the remaining height is zero.
@@ -421,7 +425,7 @@ draw_drawdown__column_end:
         b draw_drawdown__column
 
 draw_drawdown__end:
-        pop {r4-r11}
+        pop {r4-r12}
         pop {lr}
         bx lr
 
@@ -444,6 +448,7 @@ draw_drawdown_remaining_size:
         bgt draw_drawdown_remaining_size__remaining_size_smaller_then_max_size
         b draw_drawdown_remaining_size__end
 
+        // TODO: Replace with "ite" instruction
 draw_drawdown_remaining_size__remaining_size_smaller_then_max_size:
         // Return the remaining height as the column height, which in
         // this case is smaller then the max pattern size.
@@ -457,22 +462,15 @@ draw_drawdown_remaining_size__end:
         bx lr
 
 // Draws a single drawdown grid at starting point x (r0) and y (r1)
-// with number of rows (r2) and columns (r3).
+// with the given width (r2) and height (r3).
 draw_drawdown_tile:
         push {lr}
         push {r4-r12}
 
-        // Starting x-coordinate
-        mov r11, r0
-        
-        // Starting y-coordinate
-        mov r6, r1
-
-        // Counter for number of rows
-        mov r4, r2
-        
-        // Number of columns
-        mov r12, r3
+        mov r11, r0 // Starting x-coordinate
+        mov r6, r1  // Starting y-coordinate
+        mov r12, r2 // Width
+        mov r4, r3  // Height
         
         // Store the initial treadling address 
         ldr r5, =TREADLING
