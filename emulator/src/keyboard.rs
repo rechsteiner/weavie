@@ -1,13 +1,13 @@
 use winit::event::{ElementState, KeyboardInput, VirtualKeyCode};
 
 pub struct Keyboard {
-    keys: [bool; 4],
+    keys: [bool; 6],
 }
 
 impl Keyboard {
     pub fn new() -> Self {
         Keyboard {
-            keys: [false, false, false, false],
+            keys: [false, false, false, false, false, false],
         }
     }
 
@@ -16,7 +16,7 @@ impl Keyboard {
 
         for (index, &value) in self.keys.iter().enumerate() {
             if value {
-                result |= 1 << (6 - index);
+                result |= 1 << (5 - index);
             }
         }
 
@@ -30,10 +30,12 @@ impl Keyboard {
         };
 
         match input.virtual_keycode {
-            Some(VirtualKeyCode::A) => self.keys[0] = is_pressed,
-            Some(VirtualKeyCode::S) => self.keys[1] = is_pressed,
-            Some(VirtualKeyCode::D) => self.keys[2] = is_pressed,
-            Some(VirtualKeyCode::F) => self.keys[3] = is_pressed,
+            Some(VirtualKeyCode::Q) => self.keys[0] = is_pressed,
+            Some(VirtualKeyCode::W) => self.keys[1] = is_pressed,
+            Some(VirtualKeyCode::E) => self.keys[2] = is_pressed,
+            Some(VirtualKeyCode::A) => self.keys[3] = is_pressed,
+            Some(VirtualKeyCode::S) => self.keys[4] = is_pressed,
+            Some(VirtualKeyCode::D) => self.keys[5] = is_pressed,
             _ => {}
         }
     }

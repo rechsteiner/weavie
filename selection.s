@@ -28,27 +28,27 @@ handle_input:
         push {r4-r6}
         
         // Up
-        mov r0, KEY_ONE | KEY_TWO
+        mov r0, KEY_UP
         bl pressed_keys
         beq handle_input__up
         
         // Down
-        mov r0, KEY_ONE | KEY_THREE
+        mov r0, KEY_DOWN
         bl pressed_keys
         beq handle_input__down
 
         // Backward
-        mov r0, KEY_TWO
+        mov r0, KEY_LEFT
         bl pressed_keys
         beq handle_input__backward
 
         // Forward
-        mov r0, KEY_THREE
+        mov r0, KEY_RIGHT
         bl pressed_keys
         beq handle_input__forward
 
         // Select
-        mov r0, KEY_FOUR
+        mov r0, KEY_SELECT
         bl pressed_keys
         beq handle_input__select
 

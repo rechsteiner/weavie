@@ -52,11 +52,13 @@
 .equ SELECTED_Y, 0x20007EE0
 
 // Keyboard values.
-.equ KEY_ONE, 1 << 6
-.equ KEY_TWO, 1 << 5
-.equ KEY_THREE, 1 << 4
-.equ KEY_FOUR, 1 << 3
-.equ KEY_MASK, KEY_ONE | KEY_TWO | KEY_THREE | KEY_FOUR
+.equ KEY_SWITCH, 1 << 5
+.equ KEY_UP,     1 << 4
+.equ KEY_SELECT, 1 << 3
+.equ KEY_LEFT,   1 << 2
+.equ KEY_DOWN,   1 << 1
+.equ KEY_RIGHT,  1 << 0
+.equ KEY_MASK, KEY_SWITCH | KEY_UP | KEY_SELECT | KEY_LEFT | KEY_DOWN | KEY_RIGHT
 .equ KEY_PRESSED_STATE, 0x20005EE0
 
 .equ BYTES_PER_REG, 4
