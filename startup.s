@@ -58,96 +58,9 @@ _reset_handler:
         
 main:
         bl setup_display
+        bl setup_keyboard
+        bl setup_selection
         bl reset_drawing
-
-prefill_treadling:
-        ldr r0, =TREADLING
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-
-prefill_threading:
-        ldr r0, =THREADING
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #4
-        str r1, [r0], #4
-        mov r1, #3
-        str r1, [r0], #4
-        mov r1, #2
-        str r1, [r0], #4
-        mov r1, #1
-        str r1, [r0], #4
-
-prefill_tieup:
-        ldr r0, =TIEUP
-        mov r1, #0b1001
-        str r1, [r0], #4
-        mov r1, #0b0011
-        str r1, [r0], #4
-        mov r1, #0b0110
-        str r1, [r0], #4
-        mov r1, #0b1100
-        str r1, [r0], #4
 
 draw:
         bl draw_logo
@@ -155,6 +68,12 @@ draw:
         bl delay
         bl draw_weaving_draft
         bl refresh_display
-        
+
 loop:
+        bl handle_input
+        beq loop__draw
+        b loop
+        
+loop__draw:
+        bl draw_weaving_draft
         b loop

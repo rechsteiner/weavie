@@ -10,6 +10,7 @@
 // (GPIOC_ODR) is at offset 0x14.
 .equ GPIOC, 0x40020800
 .equ GPIOC_MODER, GPIOC + 0x0
+.equ GPIOC_IDR, GPIOC + 0x10
 .equ GPIOC_ODR, GPIOC + 0x14
 .equ GPIOC_OTYPER, GPIOC + 0x04
 
@@ -45,3 +46,17 @@
 .equ THREADING, 0x20002EE0
 .equ TIEUP, 0x20003EE0
 .equ TREADLING, 0x20004EE0
+
+// Current selection.
+.equ SELECTED_X, 0x20006EE0
+.equ SELECTED_Y, 0x20007EE0
+
+// Keyboard values.
+.equ KEY_ONE, 1 << 6
+.equ KEY_TWO, 1 << 5
+.equ KEY_THREE, 1 << 4
+.equ KEY_FOUR, 1 << 3
+.equ KEY_MASK, KEY_ONE | KEY_TWO | KEY_THREE | KEY_FOUR
+.equ KEY_PRESSED_STATE, 0x20005EE0
+
+.equ BYTES_PER_REG, 4

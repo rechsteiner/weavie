@@ -1,4 +1,5 @@
 use crate::display::Display;
+use crate::keyboard::Keyboard;
 
 use colored::*;
 use std::io::Read;
@@ -24,10 +25,10 @@ impl Emulator<'_> {
         udbserver::udbserver(&mut self.unicorn, 3333, 0x0).expect("failed to start udbserver");
     }
 
-    pub fn map_memory(&mut self, display: Arc<Mutex<Display>>) {
+    pub fn map_memory(&mut self, display: Arc<Mutex<Display>>, keyboard: Arc<Mutex<Keyboard>>) {
         self.map_flash_memory();
         self.map_ram_memory();
-        self.map_peripherals(display);
+        self.map_peripherals(display, keyboard);
     }
 
     pub fn run(&mut self) {
@@ -64,7 +65,7 @@ impl Emulator<'_> {
             .expect("failed to map code page");
     }
 
-    fn map_peripherals(&mut self, display: Arc<Mutex<Display>>) {
+    fn map_peripherals(&mut self, display: Arc<Mutex<Display>>, keyboard: Arc<Mutex<Keyboard>>) {
         let start = 0x4000_0000;
         let end = 0xB000_0000;
 
@@ -79,6 +80,11 @@ impl Emulator<'_> {
 
             move |_uc: &mut Unicorn<'_, ()>, addr, _size| {
                 match start + addr as u32 {
+                    0x40020810 => {
+                        let keyboard = keyboard.lock().unwrap();
+                        let value = keyboard.get_register_value();
+                        value
+                    }
                     0x40020814 => {
                         let value = *gpioc_odr_read.lock().unwrap();
                         println!("{} read: 0x{:08x?}", "GPIOC_ODR".magenta(), value);

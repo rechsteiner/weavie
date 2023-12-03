@@ -1,4 +1,5 @@
 use crate::display::{Display, DisplayEvent};
+use crate::keyboard::Keyboard;
 
 use std::num::NonZeroU32;
 use std::sync::{Arc, Mutex};
@@ -7,7 +8,11 @@ use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{WindowBuilder, WindowLevel};
 
-pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Display>>) {
+pub fn create_window(
+    event_loop: EventLoop<DisplayEvent>,
+    keyboard: Arc<Mutex<Keyboard>>,
+    display: Arc<Mutex<Display>>,
+) {
     let window = WindowBuilder::new()
         .with_resizable(false)
         .with_inner_size(LogicalSize::new(400.0, 240.0))
@@ -76,6 +81,13 @@ pub fn create_window(event_loop: EventLoop<DisplayEvent>, display: Arc<Mutex<Dis
                 window_id,
             } if window_id == window.id() => {
                 *control_flow = ControlFlow::Exit;
+            }
+            Event::WindowEvent {
+                event: WindowEvent::KeyboardInput { input, .. },
+                ..
+            } => {
+                let mut keyboard = keyboard.lock().unwrap();
+                keyboard.handle_input(input);
             }
             _ => {}
         }

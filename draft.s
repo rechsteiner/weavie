@@ -106,6 +106,17 @@ draw_weaving_draft__drawdown:
         
         bl draw_drawdown
 
+draw_weaving_draw__selection:
+        // Start x
+        mov r0, r6
+        sub r0, #GRID_INSETS // Spacing
+        sub r0, #GRID_SIZE   // ?
+
+        // Start y
+        mov r1, #GRID_INSETS
+        
+        bl draw_selection
+
 draw_weaving_draft__end:
         pop {r4-r9}
         pop {lr}
@@ -527,4 +538,48 @@ draw_drawdown_tile__loop_row_end:
 draw_drawdown_tile__end:
         pop {r4-r12}
         pop {lr}
+        bx lr
+
+// Draws the current selection (if there is any) from the given
+// starting position (r0, r1).
+draw_selection:
+        push {lr}
+        push {r4-r7}
+        
+        // Load the current selection from memory.
+        ldr r4, =SELECTED_X
+        ldr r5, =SELECTED_Y
+        ldr r4, [r4]
+        ldr r5, [r5]
+
+        // Multiply the selected x-position with the grid size and
+        // subtract it from the starting x-position.
+        mov r6, r0
+        mov r7, r4
+        mov r8, #GRID_SIZE
+        mul r7, r7, r8
+        sub r6, r6, r7
+        mov r0, r6
+
+        // Multiply the selected y-position with the grid size and add
+        // it to the starting y-position.
+        mov r6, r1
+        mov r7, r5
+        mov r8, #GRID_SIZE
+        mul r7, r7, r8
+        add r6, r6, r7
+        mov r1, r6
+
+        // Width and height
+        mov r2, #GRID_SIZE
+        mov r3, #GRID_SIZE
+
+        // Draw the current selection as a rectangle on top of the
+        // existing weaving draft.
+        bl draw_rectangle
+        bl refresh_display
+        
+        pop {r4-r7}
+        pop {lr}
+        
         bx lr
