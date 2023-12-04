@@ -31,6 +31,16 @@ setup_selection:
 handle_input:
         push {lr}
         push {r4-r6}
+
+        // Zoom in
+        mov r0, KEY_SWITCH | KEY_SELECT
+        bl pressed_keys
+        beq handle_input__zoom_in
+
+        // Zoom out
+        mov r0, KEY_SWITCH | KEY_UP
+        bl pressed_keys
+        beq handle_input__zoom_out
         
         // Up
         mov r0, KEY_UP
@@ -60,6 +70,31 @@ handle_input:
         // Set the return value to false.
         mov r0, #0
         b handle_input__end
+
+handle_input__zoom_in:
+        // Load the current grid size, increment it and store it back.
+        ldr r0, =GRID_SIZE
+        ldr r1, [r0]
+        add r1, r1, #1
+        str r1, [r0]
+        
+        // Set the return value to true.
+        mov r0, #1
+        b handle_input__end
+
+handle_input__zoom_out:
+        // Load the current grid size, decrement it and store it back.
+        ldr r0, =GRID_SIZE
+        ldr r1, [r0]            // Current grid size
+        sub r1, r1, #1          // Subtract from current grid size
+        mov r2, #1              // Minimum value
+        cmp r1, r2              // Compare against min value
+        it gt                   
+        strgt r1, [r0]          // Store new value if it is greater than min value.
+        
+        // Set the return value to true.
+        mov r0, #1
+        b handle_input__end        
 
 handle_input__select:
         ldr r0, =THREADING
