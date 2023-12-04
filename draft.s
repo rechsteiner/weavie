@@ -6,13 +6,10 @@
 
 .global draw_weaving_draft
 
-.equ GRID_INSETS, 6
-.equ GRID_SIZE, 6
-
 // Draws the entire weaving draft.
 draw_weaving_draft:
         push {lr}
-        push {r4-r9}
+        push {r4-r8}
 
         // Reset the graphics buffer.
         bl reset_drawing
@@ -21,13 +18,17 @@ draw_weaving_draft:
         ldr r4, =THREADING_SHAFT_COUNT
         ldr r4, [r4]
 
+        // Current grid size.
+        ldr r8, =GRID_SIZE
+        ldr r8, [r8]
+
         // Treadling count.
         mov r5, #4
 
         // Starting x-coordinate for tie-up and treadling.
-        mov r0, #GRID_SIZE
-        mov r1, r5
-        mul r1, r1, r0
+        mov r0, r8               // Grid size
+        mov r1, r5               // Treadling count
+        mul r1, r1, r0           // Grid size * treadling count
         mov r6, #DISPLAY_WIDTH
         sub r6, r6, r1
         sub r6, r6, #GRID_INSETS
@@ -36,38 +37,31 @@ draw_weaving_draft:
         mov r7, #GRID_INSETS
 
 draw_weaving_draft__threading:
-        // Width
-        mov r2, r6
-        sub r2, r2, #GRID_INSETS // Spacing
-        mov r3, #GRID_SIZE
-        sdiv r2, r2, r3
+        // Width (number of columns)
+        mov r2, r6               // Tie-up x-coordinate
+        sub r2, r2, #GRID_INSETS // Subtract spacing
+        sdiv r2, r2, r8          // Width / grid size = number of columns
         
-        // Start x
-        mov r0, r6
-        sub r0, r0, #GRID_INSETS // Spacing
-        mov r1, r2
-        mov r3, #GRID_SIZE
-        mul r1, r1, r3
-        sub r0, r0, r1
+        // Starting x-coordinate
+        mov r0, r6               // Tie-up x-coordinate
+        sub r0, r0, #GRID_INSETS // Subtract spacing
+        mov r1, r2               // Width (number of columns)
+        mul r1, r1, r8           // Width * grid size = number of points
+        sub r0, r0, r1           // Subtract width from start position
 
-        // Start y
+        // Starting y-coordinate
         mov r1, r7
 
-        // Height
+        // Height (number of rows)
         mov r3, r4
         
         bl draw_threading
 
 draw_weaving_draft__tieup:
-        // Start x
-        mov r0, r6
-        // Start y
-        mov r1, r7
-        // Width
-        mov r2, r5
-        // Height
-        mov r3, r4
-        
+        mov r0, r6              // Start x
+        mov r1, r7              // Start y 
+        mov r2, r5              // Width
+        mov r3, r4              // Height
         bl draw_tieup
 
 draw_weaving_draft__treadling:
@@ -75,17 +69,15 @@ draw_weaving_draft__treadling:
         mov r0, r6
         
         // Start y
-        mov r2, #GRID_SIZE
         mov r1, r4
-        mul r1, r1, r2
+        mul r1, r1, r8           // Grid size
         add r1, r1, #GRID_INSETS // Top
         add r1, r1, #GRID_INSETS // Spacing
         
         // Height
         mov r3, #DISPLAY_HEIGHT
         sub r3, r3, r1
-        mov r2, #GRID_SIZE
-        sdiv r3, r3, r2
+        sdiv r3, r3, r8         // Grid size
         
         // Width 
         mov r2, r5
@@ -95,13 +87,12 @@ draw_weaving_draft__treadling:
 draw_weaving_draft__drawdown:   
         // Start x
         mov r0, r6
-        sub r0, #GRID_INSETS // Spacing
-        sub r0, #GRID_SIZE   // ?
+        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Grid size
 
         // Start y
-        mov r2, #GRID_SIZE
         mov r1, r4
-        mul r1, r1, r2
+        mul r1, r1, r8           // Grid size
         add r1, r1, #GRID_INSETS // Leading
         add r1, r1, #GRID_INSETS // Spacing
         
@@ -110,8 +101,8 @@ draw_weaving_draft__drawdown:
 draw_weaving_draw__selection:
         // Start x
         mov r0, r6
-        sub r0, #GRID_INSETS // Spacing
-        sub r0, #GRID_SIZE   // ?
+        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Grid size
 
         // Start y
         mov r1, #GRID_INSETS
@@ -119,7 +110,7 @@ draw_weaving_draw__selection:
         bl draw_selection
 
 draw_weaving_draft__end:
-        pop {r4-r9}
+        pop {r4-r8}
         pop {lr}
         bx lr
 
@@ -127,19 +118,20 @@ draw_weaving_draft__end:
 // (r1). The width and height are the number of grids.
 draw_threading:
         push {lr}
-        push {r4-r7}
+        push {r4-r9}
 
-        // Store initial x and y-coordinates
+        // Store initial x and y-coordinates, and width
         mov r8, r0
         mov r9, r1
-
-        // Store the width and height of the grid in separate registers.
         mov r6, r2
-        mov r7, r3
+
+        // Load the current grid size.
+        ldr r7, =GRID_SIZE
+        ldr r7, [r7]
 
         // Draw the grid behind using the r0, r1, r2 and r3 values
         // already passed into this function.
-        mov r4, #GRID_SIZE
+        mov r4, r7
         bl draw_grid
         
         // Threading pattern width.
@@ -151,10 +143,9 @@ draw_threading:
         
         // Calculate the starting x-coordinate by multiplying the
         // number of grids with the grid size.
-        mov r0, #GRID_SIZE
-        mul r6, r6, r0
-        add r6, r6, r8
-        sub r6, r6, #GRID_SIZE
+        mul r6, r6, r7          // Width * grid size
+        add r6, r6, r8          // Add starting x-coordinate
+        sub r6, r6, r7          // Subtract one grid size
 
 draw_threading__loop:
         mov r0, r6
@@ -162,14 +153,13 @@ draw_threading__loop:
         // Set the y-coordinate by multiplying the value of the
         // threading data at the current column with the grid size.
         ldr r1, [r5]
-        sub r1, r1, #1 // Make it zero-based
-        mov r2, #GRID_SIZE
-        mul r1, r1, r2
+        sub r1, r1, #1          // Make it zero-based
+        mul r1, r1, r7          // Grid size
         add r1, r1, r9
 
-        // Set the width and height.
-        mov r2, #GRID_SIZE
-        mov r3, #GRID_SIZE
+        // Set the width and height to the grid size.
+        mov r2, r7
+        mov r3, r7
 
         // Draw the rectangle.
         bl draw_rectangle
@@ -177,15 +167,16 @@ draw_threading__loop:
         // Move to the next threading data (4 bytes ahead).
         add r5, r5, #BYTES_PER_REG
 
-        // Move the x-coordinate to the previous grid column.
-        sub r6, r6, #GRID_SIZE
+        // Move the x-coordinate to the previous grid column by
+        // subtracting the grid size.
+        sub r6, r6, r7
 
         // Continue until we reached the end of the threading pattern count.
         subs r4, r4, #1
         bgt draw_threading__loop
 
 draw_threading__end:
-        pop {r4-r7}
+        pop {r4-r9}
         pop {lr}
         bx lr
 
@@ -193,16 +184,20 @@ draw_threading__end:
 // position, with width (r2) and height (r3).
 draw_treadling:
         push {lr}
-        push {r4-r8}
+        push {r4-r9}
         
         // Keep the starting x and y-coordinates.
         mov r6, r0
         mov r7, r1
         mov r8, r2
 
+        // Load the current grid size.
+        ldr r9, =GRID_SIZE
+        ldr r9, [r9]
+
         // Draw the grid behind using the r0, r1, r2 and r3 values
-        // already passed into this function.
-        mov r4, #GRID_SIZE
+        // already passed into this function and the grid size.
+        mov r4, r9
         bl draw_grid
         
         // Treadling counter
@@ -215,33 +210,36 @@ draw_treadling__loop:
         // Calculate the x-coordinate based on the starting
         // x-coordinate, plus the width, plus the treadling value
         // multiplied with the grid size.
-        mov r0, #GRID_SIZE
-        mov r1, r8
-        mul r1, r1, r0
+        mov r1, r8              // Width
+        mul r1, r1, r9          // Width * grid size
         mov r0, r6
         add r0, r0, r1
-        ldr r1, [r5]
-        mov r2, #GRID_SIZE
-        mul r1, r1, r2
-        sub r0, r0, r1
+        ldr r1, [r5]            // Current treadling value
+        mul r1, r1, r9          // Multiplied with grid size
+        sub r0, r0, r1          
         
-        // Set the y-coordinate
+        // Set the y-coordinate.
         mov r1, r7
 
-        // Set the width and height
-        mov r2, #GRID_SIZE
-        mov r3, #GRID_SIZE
+        // Set the width and height equal to the grid size.
+        mov r2, r9
+        mov r3, r9
         
         bl draw_rectangle
 
-        add r5, r5, #4
-        add r7, r7, #GRID_SIZE
-        
+        // Move to the next treadling address.
+        add r5, r5, #BYTES_PER_REG
+
+        // Move to the next row by adding the grid size.
+        add r7, r7, r9
+
+        // Subtract the treadling counter and continue drawing until
+        // we reached the end.
         subs r4, r4, #1
         bgt draw_treadling__loop
 
 draw_treadling__end:
-        pop {r4-r8}
+        pop {r4-r9}
         pop {lr}
         bx lr
 
@@ -255,12 +253,15 @@ draw_tieup:
         mov r9, r0
         mov r10, r1
 
+        // Load the current grid size.
+        ldr r4, =GRID_SIZE
+        ldr r4, [r4]
+
         // Move the starting x-coordinate to the last column of the
         // tie-up, so we draw from the end towards the beginning.
-        mov r5, #GRID_SIZE
         mov r6, r2
-        mul r6, r6, r5
-        sub r6, r6, r5
+        mul r6, r6, r4
+        sub r6, r6, r4
         add r9, r9, r6
                 
         // Store the tie-up counter based on the height.
@@ -268,9 +269,8 @@ draw_tieup:
 
         // Draw the grid behind using the r2 and r3 values already
         // passed into this function.
-        mov r4, #GRID_SIZE
         bl draw_grid
-        
+
         // Load the start of the tie-up data
         ldr r5, =TIEUP
 
@@ -297,10 +297,10 @@ draw_tieup__line_loop:
         beq draw_tieup__line_next
 
 draw_tieup__line_rectangle:
-        mov r0, r9
-        mov r1, r12
-        mov r2, #GRID_SIZE
-        mov r3, #GRID_SIZE
+        mov r0, r9              // Current x
+        mov r1, r12             // Current y
+        mov r2, r4              // Width = grid size
+        mov r3, r4              // Height = grid size
         bl draw_rectangle
         
 draw_tieup__line_next:
@@ -308,19 +308,20 @@ draw_tieup__line_next:
         // in the next iteration.
         lsl r8, r8, #1
 
-        // Move the y-coordinate to the next column.
-        add r12, r12, #GRID_SIZE
+        // Move y-coordinate to the next column by adding the grid size.
+        add r12, r12, r4
         
         // Continue looping until we have check all 8 bits.
         subs r7, r7, #1
         bne draw_tieup__line_loop
         
 draw_tieup__line_end:
-        // Move the x-position to the previous column.
-        sub r9, r9, #GRID_SIZE
+        // Move the x-position to the previous column by subtracting
+        // the grid size.
+        sub r9, r9, r4
 
         // Move to the next 32-bit memory address
-        add r5, r5, #4
+        add r5, r5, #BYTES_PER_REG
 
         // Continue to the next line until we reached the end.
         subs r11, r11, #1
@@ -408,7 +409,8 @@ draw_drawdown__column_row:
         // Add the height of the tile to the y-coordinate so we move
         // down to the next "row".
         mov r0, r8
-        mov r1, #GRID_SIZE
+        ldr r1, =GRID_SIZE
+        ldr r1, [r1]
         mul r0, r0, r1
         add r7, r7, r0
 
@@ -418,7 +420,8 @@ draw_drawdown__column_end:
         // Subtract the width of the tile to the x-coordinate so we
         // move down to the previous "column".
         mov r0, r9
-        mov r1, #GRID_SIZE
+        ldr r1, =GRID_SIZE
+        ldr r1, [r1]
         mul r0, r0, r1
         sub r4, r4, r0
         
@@ -438,7 +441,8 @@ draw_drawdown_remaining_size:
 
         // Divide the remaining height on the grid size to see how
         // many rectangles we can fit.
-        mov r1, #GRID_SIZE
+        ldr r1, =GRID_SIZE
+        ldr r1, [r1]
         sdiv r1, r0, r1
 
         // Want to draw a tile that is as tall as the treadling
@@ -507,19 +511,28 @@ draw_drawdown_tile__loop_column:
         tst r9, r1
         bne draw_drawdown_tile__loop_column_end
 
+        // TODO: Load the once at the start of the function.
+        // Load the current grid size
+        ldr r2, =GRID_SIZE
+        ldr r2, [r2]
+
         // Draw rectangle
-        mov r0, r10
-        mov r1, r6
-        mov r2, #GRID_SIZE
-        mov r3, #GRID_SIZE
+        mov r0, r10             // Current x
+        mov r1, r6              // Current y
+        mov r2, r2              // Grid size
+        mov r3, r2              // Grid size
         bl draw_rectangle
 
 draw_drawdown_tile__loop_column_end:
         // Move to the next threading column
-        add r8, r8, #4
+        add r8, r8, #BYTES_PER_REG
         
-        // To the x-coordinate to the next column
-        sub r10, r10, #GRID_SIZE
+        // Move the x-coordinate to the next column by subtracting the
+        // current grid size.
+        // TODO: Load the once at the start of the function.
+        ldr r2, =GRID_SIZE
+        ldr r2, [r2]
+        sub r10, r10, r2
 
         // Continue for each row in the grid
         subs r7, r7, #1
@@ -527,10 +540,11 @@ draw_drawdown_tile__loop_column_end:
         
 draw_drawdown_tile__loop_row_end:   
         // Move to the next treadling
-        add r5, r5, #4
+        add r5, r5, #BYTES_PER_REG
 
-        // Move to the next y-coordinate column
-        add r6, r6, #GRID_SIZE
+        // Move to the next y-coordinate column by adding the current
+        // grid size.
+        add r6, r6, r2
         
         // Continue until we reached the end of the counter.
         subs r4, r4, #1
@@ -545,7 +559,7 @@ draw_drawdown_tile__end:
 // starting position (r0, r1).
 draw_selection:
         push {lr}
-        push {r4-r7}
+        push {r4-r8}
         
         // Load the current selection from memory.
         ldr r4, =SELECTED_X
@@ -553,11 +567,14 @@ draw_selection:
         ldr r4, [r4]
         ldr r5, [r5]
 
+        // Load the current grid size.
+        ldr r8, =GRID_SIZE
+        ldr r8, [r8]
+        
         // Multiply the selected x-position with the grid size and
         // subtract it from the starting x-position.
         mov r6, r0
         mov r7, r4
-        mov r8, #GRID_SIZE
         mul r7, r7, r8
         sub r6, r6, r7
         mov r0, r6
@@ -566,21 +583,20 @@ draw_selection:
         // it to the starting y-position.
         mov r6, r1
         mov r7, r5
-        mov r8, #GRID_SIZE
         mul r7, r7, r8
         add r6, r6, r7
         mov r1, r6
 
         // Width and height
-        mov r2, #GRID_SIZE
-        mov r3, #GRID_SIZE
+        mov r2, r8
+        mov r3, r8
 
         // Draw the current selection as a rectangle on top of the
         // existing weaving draft.
         bl draw_rectangle
         bl refresh_display
         
-        pop {r4-r7}
+        pop {r4-r8}
         pop {lr}
         
         bx lr

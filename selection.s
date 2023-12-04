@@ -9,6 +9,11 @@
 
 setup_selection:
         push {lr}
+        
+        // Set the initial grid size
+        ldr r0, =GRID_SIZE
+        mov r1, #8
+        str r1, [r0]
 
         // Set the initial selected state to zero.
         ldr r2, =SELECTED_X

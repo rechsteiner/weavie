@@ -49,6 +49,10 @@
 .equ TIEUP, 0x20003EE0
 .equ TREADLING, 0x20004EE0
 
+// Size of each grid when drawing. Change this to adjust the "zoom".
+.equ GRID_SIZE, 0x20008EE0
+.equ GRID_INSETS, 8
+
 // Current selection.
 .equ SELECTED_X, 0x20006EE0
 .equ SELECTED_Y, 0x20007EE0
@@ -63,4 +67,5 @@
 .equ KEY_MASK, KEY_SWITCH | KEY_UP | KEY_SELECT | KEY_LEFT | KEY_DOWN | KEY_RIGHT
 .equ KEY_PRESSED_STATE, 0x20005EE0
 
+// Number of bytes per register (4 bytes = 32-bits).
 .equ BYTES_PER_REG, 4
