@@ -16,17 +16,21 @@ draw_point:
         push {lr}
         push {r4-r7}
 
-        // Skip drawing if the point is outside the bounds.
+        // Skip drawing if the x-value is outside the bounds.
         mov r2, #DISPLAY_WIDTH
         sub r2, r2, #1
         cmp r0, r2
         bgt draw_point__end
+        cmp r0, #0
+        ble draw_point__end
 
-        // Skip drawing if the point is outside the bounds.
+        // Skip drawing if the y-value is outside the bounds.
         mov r2, #DISPLAY_HEIGHT
         sub r2, r2, #1
         cmp r1, r2
         bgt draw_point__end
+        cmp r0, #1
+        ble draw_point__end
 
         // Load frame buffer start address into r4
         ldr r3, =FRBUF

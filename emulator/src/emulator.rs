@@ -107,7 +107,7 @@ impl Emulator<'_> {
                     }
                     _ => {
                         println!(
-                            "{} addr: 0x{:08x}",
+                            "{} read:\t0x{:08x}",
                             "UNMAPPED".yellow(),
                             start + addr as u32
                         );
@@ -163,10 +163,10 @@ impl Emulator<'_> {
                     }
                     _ => {
                         println!(
-                            "{} write: 0x{:08x?} addr=0x{:08x}",
+                            "{} write:\t0x{:08x} value: 0x{:08x?}",
                             "UNMAPPED".yellow(),
+                            start + addr as u32,
                             value,
-                            start + addr as u32
                         );
                     }
                 }

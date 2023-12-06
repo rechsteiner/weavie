@@ -456,7 +456,7 @@ draw_drawdown__column:
         // Keep the remaining width in a separate register so we can
         // subtract it from the x-coordinate after drawing the tile.
         mov r9, r0
-
+        
         // Skip to the end if the remaining width is zero.
         cmp r9, #0
         beq draw_drawdown__end
@@ -533,19 +533,13 @@ draw_drawdown_remaining_size:
         // pattern, or use the minimum remaining grid size. Compares
         // against the max tile size and chooses the smallest one.
         cmp r2, r1
-        bgt draw_drawdown_remaining_size__remaining_size_smaller_then_max_size
-        b draw_drawdown_remaining_size__end
-
-        // TODO: Replace with "ite" instruction
-draw_drawdown_remaining_size__remaining_size_smaller_then_max_size:
+        ite eq
         // Return the remaining height as the column height, which in
         // this case is smaller then the max pattern size.
-        mov r0, r1
-
-draw_drawdown_remaining_size__end:
+        moveq r0, r1
         // Return the default pattern size.
-        mov r0, r2
-        
+        movne r0, r2
+
         pop {lr}
         bx lr
 
