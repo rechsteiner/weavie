@@ -219,7 +219,7 @@ reset_drawing:
         mov r2, #0
 
 reset_drawing__loop:
-        str r2, [r0], #4
+        str r2, [r0], #BYTES_PER_REG
         subs r1, r1, #1
         bne reset_drawing__loop
 

@@ -17,6 +17,8 @@ delay_decrement:
         bne delay_decrement
         bx lr
 
+// Write the value of the r0 register to a specific memory address
+// which the emulator picks up and prints out.
 debug:
         push {r4}
         ldr r4, =0x40010000

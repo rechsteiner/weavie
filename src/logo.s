@@ -30,9 +30,9 @@ draw_logo__line:
         ldr r3, =LOGO_WIDTH
         
 draw_logo__loop:
-        ldr r2, [r0], #4
+        ldr r2, [r0], #BYTES_PER_REG
         rbit r2, r2
-        str r2, [r1], #4
+        str r2, [r1], #BYTES_PER_REG
 
         // Continue until we reached the width of the logo.
         subs r3, r3, #1
@@ -43,7 +43,7 @@ draw_logo__loop:
 
         // Move back to the beginning of the logo (5 registers * 4 bytes).
         ldr r3, =LOGO_WIDTH
-        mov r5, #4
+        mov r5, #BYTES_PER_REG
         mul r3, r3, r5
         sub r1, r1, r3
 
