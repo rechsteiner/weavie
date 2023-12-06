@@ -38,7 +38,7 @@ impl Emulator<'_> {
     fn map_flash_memory(&mut self) {
         let size = 0x100000;
 
-        let mut file = std::fs::File::open("main.bin").unwrap();
+        let mut file = std::fs::File::open("build/main.bin").unwrap();
         let mut file_buf = Vec::new();
         file.read_to_end(&mut file_buf).unwrap();
         let arm_code = &file_buf[0..file_buf.len().min(size)];

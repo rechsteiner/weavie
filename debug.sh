@@ -13,4 +13,4 @@ cleanup() {
 trap cleanup EXIT
 
 # Start gdb and connect to the server
-arm-none-eabi-gdb -x .gdbinit main.elf
+arm-none-eabi-gdb -x .gdbinit build/main.elf
