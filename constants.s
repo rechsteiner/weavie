@@ -47,15 +47,17 @@
 .equ THREADING_PATTERN_COUNT, 0x20002EE4
 .equ THREADING, 0x20002EE8
 .equ TIEUP, 0x20003EE0
-.equ TREADLING, 0x20004EE0
+.equ TREADLING_PATTERN_COUNT, 0x20004EE0
+.equ TREADLING, 0x20004EE4
 
 // Size of each grid when drawing. Change this to adjust the "zoom".
 .equ GRID_SIZE, 0x20008EE0
 .equ GRID_INSETS, 8
 
 // Current selection.
-.equ SELECTED_X, 0x20006EE0
-.equ SELECTED_Y, 0x20007EE0
+.equ SELECTED_GRID, 0x20006EE0
+.equ SELECTED_X, 0x20006EE4
+.equ SELECTED_Y, 0x20006EE8
 
 // Keyboard values.
 .equ KEY_SWITCH, 1 << 5

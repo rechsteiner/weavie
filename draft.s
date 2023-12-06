@@ -99,15 +99,53 @@ draw_weaving_draft__drawdown:
         bl draw_drawdown
 
 draw_weaving_draw__selection:
-        // Start x
-        mov r0, r6
+        ldr r0, =SELECTED_GRID
+        ldr r0, [r0]
+
+        mov r1, #0
+        cmp r0, r1
+        beq draw_weaving_draw__selection_threading
+
+        mov r1, #1
+        cmp r0, r1
+        beq draw_weaving_draw__selection_tieup
+
+        mov r1, #2
+        cmp r0, r1
+        beq draw_weaving_draw__selection_treadling
+
+        b draw_weaving_draft__end
+
+draw_weaving_draw__selection_threading:
+        mov r0, r6               // Start x
         sub r0, #GRID_INSETS     // Spacing
         sub r0, r8               // Grid size
+        mov r1, #GRID_INSETS     // Start y
+        bl draw_selection
+        b draw_weaving_draft__end
 
-        // Start y
-        mov r1, #GRID_INSETS
+draw_weaving_draw__selection_tieup:
+        mov r0, #DISPLAY_WIDTH   // Start x
+        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Grid size
+        mov r1, #GRID_INSETS     // Start y
+        bl draw_selection
+        b draw_weaving_draft__end
+        
+draw_weaving_draw__selection_treadling:
+        mov r0, #DISPLAY_WIDTH   // Start x
+        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Grid size
+        
+        // TODO: Rewrite these offsets so we don't have to duplicate
+        // it multiple times.
+        mov r1, r4               // Start y
+        mul r1, r1, r8           // Grid size
+        add r1, r1, #GRID_INSETS // Top
+        add r1, r1, #GRID_INSETS // Spacing
         
         bl draw_selection
+        b draw_weaving_draft__end
 
 draw_weaving_draft__end:
         pop {r4-r8}
@@ -201,7 +239,8 @@ draw_treadling:
         bl draw_grid
         
         // Treadling counter
-        mov r4, #18
+        ldr r4, =TREADLING_PATTERN_COUNT
+        ldr r4, [r4]
         
         // Load the start of the treadling data
         ldr r5, =TREADLING
@@ -348,8 +387,8 @@ draw_drawdown:
         ldr r6, [r6]
 
         // Treadling pattern count (tile height).
-        // TODO: Replace with dynamic value
-        mov r12, #14
+        ldr r12, =TREADLING_PATTERN_COUNT
+        ldr r12, [r12]
 
 draw_drawdown__column:
         // Reset the current y-coordinate for each column.

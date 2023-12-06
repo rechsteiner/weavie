@@ -70,7 +70,7 @@ draw:
         bl refresh_display
 
 loop:
-        bl handle_input
+        bl handle_selection
         beq loop__draw
         b loop
         
