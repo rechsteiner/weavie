@@ -72,7 +72,6 @@ x/20c $r1
 
 - Board: [Adafruit Feather STM32F405 Cortex M4](https://www.adafruit.com/product/4382)
 - Display: [Adafruit SHARP 2.7"](https://www.adafruit.com/product/4694)
-- Printer: [Thermal Receipt Printer](https://www.adafruit.com/product/2753)
 - J-Link: [SEGGER J-Link EDU Mini](https://www.adafruit.com/product/3571)
 - Keys: [NeoKey - Four Mechanical Key Switches](https://www.adafruit.com/product/4980)
 
