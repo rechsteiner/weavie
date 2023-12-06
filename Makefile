@@ -28,7 +28,6 @@ build/main.bin: build/main.elf
 build/main.elf: build/startup.o \
 	build/display.o \
 	build/keyboard.o \
-	build/led.o \
 	build/utils.o \
 	build/graphics.o \
 	build/weaving_draft.o \
