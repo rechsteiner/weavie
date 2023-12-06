@@ -60,6 +60,7 @@ main:
         bl setup_display
         bl setup_keyboard
         bl setup_selection
+        bl prefill_pattern
         bl reset_drawing
 
 draw:
