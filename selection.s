@@ -351,9 +351,6 @@ select_treadling:
         eor r5, r5, r4
         str r5, [r0]
 
-        mov r0, r5
-        bl debug
-
         // Check if the selected y-position is larger than the
         // treadling pattern count and increase it.
         ldr r2, =TREADLING_PATTERN_COUNT
