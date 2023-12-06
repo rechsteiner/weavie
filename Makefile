@@ -25,7 +25,7 @@ disassemble: main.bin
 main.bin: main.elf
 	arm-none-eabi-objcopy -O binary main.elf main.bin
 
-main.elf: startup.o display.o keyboard.o led.o utils.o graphics.o draft.o selection.o logo.o linker.ld
+main.elf: startup.o display.o keyboard.o led.o utils.o graphics.o weaving_draft.o selection.o logo.o linker.ld
 	arm-none-eabi-ld -T linker.ld  -o main.elf \
 		startup.o \
 		display.o \
@@ -33,7 +33,7 @@ main.elf: startup.o display.o keyboard.o led.o utils.o graphics.o draft.o select
 		utils.o \
 		led.o \
 		graphics.o \
-		draft.o \
+		weaving_draft.o \
 		selection.o \
 		logo.o
 
@@ -55,8 +55,8 @@ led.o: led.s constants.s
 graphics.o: graphics.s constants.s
 	arm-none-eabi-as -mthumb graphics.s -o graphics.o
 
-draft.o: draft.s constants.s
-	arm-none-eabi-as -mthumb draft.s -o draft.o
+weaving_draft.o: weaving_draft.s constants.s
+	arm-none-eabi-as -mthumb weaving_draft.s -o weaving_draft.o
 
 selection.o: selection.s constants.s
 	arm-none-eabi-as -mthumb selection.s -o selection.o
