@@ -97,7 +97,7 @@ impl Emulator<'_> {
                     }
                     0x4000380C => {
                         let value = *spi_dr_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "SPI_DR".blue(), value);
+                        // println!("{} read: 0x{:08x?}", "SPI_DR".blue(), value);
                         value
                     }
                     0x40003808 => {
@@ -156,7 +156,7 @@ impl Emulator<'_> {
                         display.receive(value as u8);
 
                         *spi_dr_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
+                        // println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
                     }
                     0x40010000 => {
                         println!("{}: 0b{:08b}", "DEBUG".yellow(), value);
