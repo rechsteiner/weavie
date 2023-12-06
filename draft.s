@@ -246,25 +246,11 @@ draw_treadling:
         ldr r5, =TREADLING
 
 draw_treadling__loop:
-        // Calculate the x-coordinate based on the starting
-        // x-coordinate, plus the width, plus the treadling value
-        // multiplied with the grid size.
-        mov r1, r8              // Width
-        mul r1, r1, r9          // Width * grid size
         mov r0, r6
-        add r0, r0, r1
-        ldr r1, [r5]            // Current treadling value
-        mul r1, r1, r9          // Multiplied with grid size
-        sub r0, r0, r1          
-        
-        // Set the y-coordinate.
         mov r1, r7
-
-        // Set the width and height equal to the grid size.
-        mov r2, r9
-        mov r3, r9
-        
-        bl draw_rectangle
+        mov r2, r8
+        ldr r3, [r5]
+        bl draw_treadling_row
 
         // Move to the next treadling address.
         add r5, r5, #BYTES_PER_REG
@@ -278,6 +264,65 @@ draw_treadling__loop:
         bgt draw_treadling__loop
 
 draw_treadling__end:
+        pop {r4-r9}
+        pop {lr}
+        bx lr
+
+// Draws a single row for the treadling grid with the given x (r0), y
+// (r1), width (r2) and treadling value (r3).
+draw_treadling_row:
+        push {lr}
+        push {r4-r9}
+
+        // Load the current grid size.
+        ldr r4, =GRID_SIZE
+        ldr r4, [r4]
+
+        // This will be used to test against each bit, starting with
+        // the least-significant bit. On each iteration we will shift
+        // this register by 1.
+        mov r5, #1
+
+        // Store function arguments as local variable to prevent them
+        // from being overwritten.
+        mov r6, r0
+        mov r7, r1
+        mov r8, r2
+        mov r9, r3
+
+        // Move the starting x-coordinate to the end of the grid so we
+        // draw from trailing to leading.
+        mov r0, r4              // Grid size
+        mul r0, r0, r8          // Multiplied with width
+        sub r0, r0, r4          // Subtract 1 grid size
+        add r6, r6, r0          // Add to starting x-coordinate
+        
+draw_treadling_row__column:
+        // Check the value of the current bit and continue to the next
+        // column if it's not enabled.
+        tst r9, r5
+        beq draw_treadling_row__column__end
+
+        mov r0, r6              // Current x
+        mov r1, r7              // Current y
+        mov r2, r4              // Width = grid size
+        mov r3, r4              // Height = grid size
+        bl draw_rectangle
+
+draw_treadling_row__column__end:
+        // Shift our test register by 1 so we can compare the next bit
+        // in the next iteration.
+        lsl r5, r5, #1
+        
+        // Move the current x-coordinate to the previous column by
+        // adding the grid size.
+        sub r6, r6, r4
+        
+        // Continue drawing for the entire width of the row.
+        subs r8, r8, #1
+        bne draw_treadling_row__column
+
+draw_treadling_row__end:
         pop {r4-r9}
         pop {lr}
         bx lr
@@ -314,7 +359,7 @@ draw_tieup:
         ldr r5, =TIEUP
 
 draw_tieup__line:
-        // Load the data of r5 into r6
+        // Load the value of the current tieup address.
         ldr r6, [r5]
         
         // Keep a counter for each bit we want to test against.
@@ -525,17 +570,11 @@ draw_drawdown_tile__loop_row:
         // Reset the threading address for each row
         ldr r8, =THREADING
         
-        // Calculate the tie-up address offset for the current
-        // treadling column.
+        // Calculate the combined tie-up value for the current
+        // treadling row.
         ldr r0, [r5]
-        sub r0, r0, #1
-        mov r1, #4
-        mul r1, r1, r0
-
-        // Offset the tie-up address with the treadling value.
-        ldr r9, =TIEUP
-        add r9, r9, r1
-        ldr r9, [r9]
+        bl tieup_for_treadling_row
+        mov r9, r0
 
         // Reset the starting x-coordinate for the row.
         mov r10, r11
@@ -591,6 +630,53 @@ draw_drawdown_tile__loop_row_end:
 
 draw_drawdown_tile__end:
         pop {r4-r12}
+        pop {lr}
+        bx lr
+
+// Returns the combined tie-up values for a given treadling row.
+// r0 = treadling data
+// Returns tie-up value in r0
+tieup_for_treadling_row:
+        push {lr}
+        push {r4-r7}
+        
+        // TODO: Move into dynamic value.
+        mov r4, #4              // Number of treadles.
+        mov r5, #0              // Initial tie-up value.
+        mov r6, r0              // Treadling row value.
+        ldr r7, =TIEUP          // Tie-up address.
+
+tieup_for_treadling_row__loop:
+        // Shift a bit into the correct position and check if the
+        // treadling value for that bit.
+        mov r0, #1
+        mov r1, r4
+        sub r1, r1, #1
+        lsl r0, r1
+        tst r6, r0
+        beq tieup_for_treadling_row__loop_end
+        
+        // Calculate the tie-up address offset for the current bit in
+        // the treadling row.
+        mov r0, r4
+        sub r0, r0, #1
+        mov r1, #BYTES_PER_REG
+        mul r1, r1, r0
+        add r7, r7, r1
+        ldr r0, [r7]
+
+        // Add the tie-up value for the current bit to the accumulated
+        // tie-up value for the entire row.
+        add r5, r5, r0
+
+tieup_for_treadling_row__loop_end:
+        // Continue until we checked all the bits in the row.
+        subs r4, r4, #1
+        bne tieup_for_treadling_row__loop
+
+        // Return the accumulated tie-up value.
+        mov r0, r5
+        pop {r4-r7}
         pop {lr}
         bx lr
 

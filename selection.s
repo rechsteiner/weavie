@@ -340,25 +340,18 @@ select_treadling:
         mul r4, r4, r3
         add r0, r0, r4
 
-        // TODO: Replace with code below to support enabling multiple
-        // treadling values at the same time.
-        ldr r1, [r1]
-        add r1, r1, #1
-        str r1, [r0]
-
         // Load the current selection and use that to shift the value
         // 1 into the correct bit position.
-        // ldr r1, [r1]
-        // mov r4, #1
-        // lsl r4, r1
+        ldr r1, [r1]
+        mov r4, #1
+        lsl r4, r1
 
         // Toggle the x-position bit in the treadling pattern.
-        // ldr r5, [r0]
-        // eor r5, r5, r4
-        // mov r5, r4
-        // str r5, [r0]
+        ldr r5, [r0]
+        eor r5, r5, r4
+        str r5, [r0]
 
-        mov r0, r4
+        mov r0, r5
         bl debug
 
         // Check if the selected y-position is larger than the
@@ -391,41 +384,41 @@ prefill_pattern__treadling:
         str r1, [r0]
         
         ldr r0, =TREADLING
-        mov r1, #4
+        mov r1, 0b1000
         str r1, [r0], #4
-        mov r1, #3
+        mov r1, 0b0100
         str r1, [r0], #4
-        mov r1, #2
+        mov r1, 0b0010
         str r1, [r0], #4
-        mov r1, #1
+        mov r1, 0b0001
         str r1, [r0], #4
-        mov r1, #4
+        mov r1, 0b1000
         str r1, [r0], #4
-        mov r1, #3
+        mov r1, 0b0100
         str r1, [r0], #4
-        mov r1, #2
+        mov r1, 0b0010
         str r1, [r0], #4
-        mov r1, #1
+        mov r1, 0b0001
         str r1, [r0], #4
-        mov r1, #2
+        mov r1, 0b0010
         str r1, [r0], #4
-        mov r1, #3
+        mov r1, 0b0100
         str r1, [r0], #4
-        mov r1, #4
+        mov r1, 0b1000
         str r1, [r0], #4
-        mov r1, #1
+        mov r1, 0b0001
         str r1, [r0], #4
-        mov r1, #2
+        mov r1, 0b0010
         str r1, [r0], #4
-        mov r1, #3
+        mov r1, 0b0100
         str r1, [r0], #4
-        mov r1, #4
+        mov r1, 0b1000
         str r1, [r0], #4
-        mov r1, #3
+        mov r1, 0b0100
         str r1, [r0], #4
-        mov r1, #2
+        mov r1, 0b0010
         str r1, [r0], #4
-        mov r1, #1
+        mov r1, 0b0001
         str r1, [r0], #4
 
 prefill_pattern__threading:
