@@ -287,35 +287,46 @@ handle_selection__end:
 
 select_threading:
         push {lr}
-        push {r4}
+        push {r4-r7}
         
         ldr r0, =THREADING
         ldr r1, =SELECTED_X
+        ldr r1, [r1]
         ldr r2, =SELECTED_Y
         
         // Move to the treadling address for the current x-selection.
         mov r3, #BYTES_PER_REG
-        ldr r4, [r1]
-        mul r3, r3, r4
+        mul r3, r3, r1
         add r0, r0, r3
 
-        // TODO: Either change THREADING data to be zero-indexed or
-        // update SELECTED_Y to be 1-indexed.
-        ldr r2, [r2]
-        add r2, r2, #1
-        str r2, [r0]
+        // Current threading value.
+        ldr r7, [r0]
+
+        // Store selected y-into the threading data.
+        ldr r5, [r2]
+        add r5, r5, #1
+        str r5, [r0]
 
         // Check if the selected x-position is larger than the
         // threading pattern count and increase it.
-        ldr r1, [r1]
-        ldr r2, =THREADING_PATTERN_COUNT
-        ldr r3, [r2]
+        ldr r6, =THREADING_PATTERN_COUNT
+        ldr r3, [r6]
         cmp r1, r3
-        add r1, r1, #1
+        add r4, r1, #1
         it eq
-        streq r1, [r2]
+        streq r4, [r6]
 
-        pop {r4}
+        // Shrink threading count when de-selecting last value.
+        add r1, r1, #1
+        cmp r1, r3
+        bne select_threading__end
+        cmp r5, r7
+        sub r3, r3, #1
+        it eq
+        streq r3, [r6]
+
+select_threading__end:
+        pop {r4-r7}
         pop {lr}
         bx lr
 
