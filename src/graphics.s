@@ -22,7 +22,7 @@ draw_point:
         sub r2, r2, #1
         cmp r0, r2
         bgt draw_point__end
-        cmp r0, #0
+        cmp r0, #-1
         ble draw_point__end
 
         // Skip drawing if the y-value is outside the bounds.
@@ -30,7 +30,7 @@ draw_point:
         sub r2, r2, #1
         cmp r1, r2
         bgt draw_point__end
-        cmp r0, #1
+        cmp r1, #-1
         ble draw_point__end
 
         // Load frame buffer start address into r4
