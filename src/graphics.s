@@ -9,6 +9,7 @@
 .global draw_vertical_line
 .global draw_rectangle
 .global draw_grid
+.global draw_box
 .global reset_drawing
 
 // Draws a point at the given x (r0) and y (r1) coordinates.
@@ -107,6 +108,7 @@ draw_vertical_line:
         mov r4, r0
         mov r5, r1
         mov r6, r2
+        add r6, r6, #1
 
 draw_vertical_line__loop:
         // Set up parameters for draw_point (x: r4, y: r5)
@@ -208,6 +210,55 @@ draw_grid__horizonal:
 
 draw_grid__end:
         pop {r5-r12}
+        pop {lr}
+        bx lr
+
+// Draws a box at position x (r0) and y (r1) with width (r2) and
+// height (r3) in pixels, and stroke width (r4).
+draw_box:
+        push {lr}
+        push {r5-r9}
+
+        // Store arguments as local variables.
+        mov r5, r0
+        mov r6, r1
+        mov r7, r2
+        mov r8, r3
+        // TODO: Take max of width/height and stroke
+        mov r9, r4
+
+draw_box__lines:
+        mov r0, r5
+        mov r1, r6
+        mov r2, r7
+        bl draw_horizontal_line
+
+        mov r0, r5
+        mov r1, r6
+        add r1, r1, r8
+        mov r2, r7
+        bl draw_horizontal_line
+
+        mov r0, r5
+        mov r1, r6
+        mov r2, r8
+        bl draw_vertical_line
+
+        mov r0, r5
+        add r0, r0, r7
+        mov r1, r6
+        mov r2, r8
+        bl draw_vertical_line
+
+        subs r9, r9, #1
+        add r5, r5, #1
+        add r6, r6, #1
+        sub r7, r7, #2
+        sub r8, r8, #2
+        bne draw_box__lines
+        
+draw_box__end:
+        pop {r5-r9}
         pop {lr}
         bx lr
 

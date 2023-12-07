@@ -156,19 +156,32 @@ draw_weaving_draft__end:
 // (r1). The width and height are the number of grids.
 draw_threading:
         push {lr}
-        push {r4-r9}
+        push {r4-r10}
 
         // Store initial x and y-coordinates, and width
         mov r8, r0
         mov r9, r1
         mov r6, r2
+        mov r10, r3
 
         // Load the current grid size.
         ldr r7, =GRID_SIZE
         ldr r7, [r7]
+        
+        // Draw box around grid if threading is selected.
+        ldr r5, =SELECTED_GRID
+        ldr r5, [r5]
+        cmp r5, #1
+        it eq
+        bleq draw_selection_box
 
+draw_threading__setup:
         // Draw the grid behind using the r0, r1, r2 and r3 values
         // already passed into this function.
+        mov r0, r8
+        mov r1, r9
+        mov r2, r6
+        mov r3, r10
         mov r4, r7
         bl draw_grid
         
@@ -214,7 +227,7 @@ draw_threading__loop:
         bgt draw_threading__loop
 
 draw_threading__end:
-        pop {r4-r9}
+        pop {r4-r10}
         pop {lr}
         bx lr
 
@@ -222,19 +235,32 @@ draw_threading__end:
 // position, with width (r2) and height (r3).
 draw_treadling:
         push {lr}
-        push {r4-r9}
+        push {r4-r10}
         
         // Keep the starting x and y-coordinates.
         mov r6, r0
         mov r7, r1
         mov r8, r2
+        mov r10, r3
 
         // Load the current grid size.
         ldr r9, =GRID_SIZE
         ldr r9, [r9]
 
+        // Draw box around grid if treadling is selected.
+        ldr r5, =SELECTED_GRID
+        ldr r5, [r5]
+        cmp r5, #3
+        it eq
+        bleq draw_selection_box
+
+draw_treadling__setup:
         // Draw the grid behind using the r0, r1, r2 and r3 values
         // already passed into this function and the grid size.
+        mov r0, r6
+        mov r1, r7
+        mov r2, r8
+        mov r3, r10
         mov r4, r9
         bl draw_grid
         
@@ -264,7 +290,7 @@ draw_treadling__loop:
         bgt draw_treadling__loop
 
 draw_treadling__end:
-        pop {r4-r9}
+        pop {r4-r10}
         pop {lr}
         bx lr
 
@@ -336,25 +362,41 @@ draw_tieup:
         // Keep the starting x and y-coordinates.
         mov r9, r0
         mov r10, r1
+        mov r6, r2
+        
+        // Store the tie-up counter based on the height.
+        mov r11, r3
 
         // Load the current grid size.
         ldr r4, =GRID_SIZE
         ldr r4, [r4]
 
-        // Move the starting x-coordinate to the last column of the
-        // tie-up, so we draw from the end towards the beginning.
-        mov r6, r2
-        mul r6, r6, r4
-        sub r6, r6, r4
-        add r9, r9, r6
-                
-        // Store the tie-up counter based on the height.
-        mov r11, r3
+        // Draw box around grid if tie-up is selected.
+        ldr r5, =SELECTED_GRID
+        ldr r5, [r5]
+        cmp r5, #2
+        it eq
+        bleq draw_selection_box
+
+draw_tieup__setup:
+        // Load the current grid size.
+        ldr r4, =GRID_SIZE
+        ldr r4, [r4]
 
         // Draw the grid behind using the r2 and r3 values already
         // passed into this function.
+        mov r0, r9
+        mov r1, r10
+        mov r2, r6
+        mov r3, r11
         bl draw_grid
-
+        
+        // Move the starting x-coordinate to the last column of the
+        // tie-up, so we draw from the end towards the beginning.
+        mul r6, r6, r4
+        sub r6, r6, r4
+        add r9, r9, r6
+        
         // Load the start of the tie-up data
         ldr r5, =TIEUP
 
@@ -671,6 +713,26 @@ tieup_for_treadling_row__loop_end:
         // Return the accumulated tie-up value.
         mov r0, r5
         pop {r4-r7}
+        pop {lr}
+        bx lr
+
+draw_selection_box:
+        push {lr}
+        push {r4-r5}
+        
+        ldr r5, =GRID_SIZE
+        ldr r5, [r5]
+
+        sub r0, r0, #4          // Offset
+        sub r1, r1, #4          // Offset
+        mul r2, r2, r5          // Multiply with grid size
+        add r2, r2, #8          // Offset
+        mul r3, r3, r5          // Multiply with grid size
+        add r3, r3, #8          // Offset
+        mov r4, #2              // Stroke width
+        bl draw_box
+
+        pop {r4-r5}
         pop {lr}
         bx lr
 
