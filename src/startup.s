@@ -77,4 +77,5 @@ loop:
         
 loop__draw:
         bl draw_weaving_draft
+        bl refresh_display
         b loop

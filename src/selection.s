@@ -81,7 +81,7 @@ handle_selection__switch:
 
         // Compare the new selected value with the maximum value. Move
         // back to the first grid if it's already at the last grid.
-        mov r2, #2
+        mov r2, #3
         cmp r1, r2
         mov r3, #0
         ite le
@@ -129,17 +129,17 @@ handle_selection__select:
         ldr r0, [r0]
 
         // Select threading.
-        cmp r0, #0
+        cmp r0, #1
         it eq
         bleq select_threading
 
         // Select tie-up.
-        cmp r0, #1
+        cmp r0, #2
         it eq
         bleq select_tieup
 
         // Select treadling.
-        cmp r0, #2
+        cmp r0, #3
         it eq
         bleq select_treadling
         
@@ -156,12 +156,18 @@ handle_selection__down:
         // for that selection.
         ldr r4, =SELECTED_GRID
         ldr r4, [r4]
+        
+        // Return false if the selected grid is zero.
+        cmp r4, #0
+        it eq
+        moveq r0, #0
+        beq handle_selection__end
 
         // Load the maximum value based on the selected grid. For the
         // threading and tie-up, the shaft count is the max value,
         // whereas the treadling pattern count is the max value for
         // the treadling.
-        mov r0, #2              
+        mov r0, #3
         cmp r0, r4
         ite eq
         ldreq r3, =TREADLING_PATTERN_COUNT
@@ -189,6 +195,14 @@ handle_selection__down:
         b handle_selection__end
         
 handle_selection__up:
+        // Return false if the selected grid is zero.
+        ldr r4, =SELECTED_GRID
+        ldr r4, [r4]
+        cmp r4, #0
+        it eq
+        moveq r0, #0
+        beq handle_selection__end
+        
         // Subtract one from the selected y-position. If the
         // subtraction overflows we store zero instead.
         ldr r1, =SELECTED_Y
@@ -203,6 +217,14 @@ handle_selection__up:
         b handle_selection__end
 
 handle_selection__forward:
+        // Return false if the selected grid is zero.
+        ldr r4, =SELECTED_GRID
+        ldr r4, [r4]
+        cmp r4, #0
+        it eq
+        moveq r0, #0
+        beq handle_selection__end
+        
         // Subtract one from the selected x-position. If the
         // subtraction overflows we store zero instead.
         ldr r1, =SELECTED_X
@@ -226,8 +248,14 @@ handle_selection__backward:
         ldr r4, =SELECTED_GRID
         ldr r4, [r4]
 
+        // Return false if the selected grid is zero.
+        cmp r4, #0
+        it eq
+        moveq r0, #0
+        beq handle_selection__end
+
         // Load the maximum value based on the selected grid.
-        mov r0, #0
+        mov r0, #1
         cmp r0, r4
         ite eq
         ldreq r3, =THREADING_PATTERN_COUNT

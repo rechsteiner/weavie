@@ -102,15 +102,15 @@ draw_weaving_draw__selection:
         ldr r0, =SELECTED_GRID
         ldr r0, [r0]
 
-        mov r1, #0
+        mov r1, #1
         cmp r0, r1
         beq draw_weaving_draw__selection_threading
 
-        mov r1, #1
+        mov r1, #2
         cmp r0, r1
         beq draw_weaving_draw__selection_tieup
 
-        mov r1, #2
+        mov r1, #3
         cmp r0, r1
         beq draw_weaving_draw__selection_treadling
 
@@ -713,7 +713,6 @@ draw_selection:
         // Draw the current selection as a rectangle on top of the
         // existing weaving draft.
         bl draw_rectangle
-        bl refresh_display
         
         pop {r4-r8}
         pop {lr}
