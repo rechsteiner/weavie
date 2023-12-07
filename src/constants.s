@@ -50,9 +50,8 @@
 .equ TREADLING_PATTERN_COUNT, 0x20004EE0
 .equ TREADLING, 0x20004EE4
 
-// Size of each grid when drawing. Change this to adjust the "zoom".
+// Size of each grid when drawing. Change this to adjust the zoom-level.
 .equ GRID_SIZE, 0x20008EE0
-.equ GRID_INSETS, 8
 
 // Current selection.
 .equ SELECTED_GRID, 0x20006EE0

@@ -31,20 +31,20 @@ draw_weaving_draft:
         mul r1, r1, r0           // Grid size * treadling count
         mov r6, #DISPLAY_WIDTH
         sub r6, r6, r1
-        sub r6, r6, #GRID_INSETS
+        sub r6, r6, r8
 
         // Starting y-coordinate for threading and tie-up.
-        mov r7, #GRID_INSETS
+        mov r7, r8
 
 draw_weaving_draft__threading:
         // Width (number of columns)
         mov r2, r6               // Tie-up x-coordinate
-        sub r2, r2, #GRID_INSETS // Subtract spacing
+        sub r2, r2, r8           // Subtract spacing
         sdiv r2, r2, r8          // Width / grid size = number of columns
         
         // Starting x-coordinate
         mov r0, r6               // Tie-up x-coordinate
-        sub r0, r0, #GRID_INSETS // Subtract spacing
+        sub r0, r0, r8           // Subtract spacing
         mov r1, r2               // Width (number of columns)
         mul r1, r1, r8           // Width * grid size = number of points
         sub r0, r0, r1           // Subtract width from start position
@@ -71,8 +71,8 @@ draw_weaving_draft__treadling:
         // Start y
         mov r1, r4
         mul r1, r1, r8           // Grid size
-        add r1, r1, #GRID_INSETS // Top
-        add r1, r1, #GRID_INSETS // Spacing
+        add r1, r1, r8           // Top
+        add r1, r1, r8           // Spacing
         
         // Height
         mov r3, #DISPLAY_HEIGHT
@@ -87,14 +87,14 @@ draw_weaving_draft__treadling:
 draw_weaving_draft__drawdown:   
         // Start x
         mov r0, r6
-        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Spacing
         sub r0, r8               // Grid size
 
         // Start y
         mov r1, r4
         mul r1, r1, r8           // Grid size
-        add r1, r1, #GRID_INSETS // Leading
-        add r1, r1, #GRID_INSETS // Spacing
+        add r1, r1, r8           // Leading
+        add r1, r1, r8           // Spacing
         
         bl draw_drawdown
 
@@ -118,31 +118,31 @@ draw_weaving_draw__selection:
 
 draw_weaving_draw__selection_threading:
         mov r0, r6               // Start x
-        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Spacing
         sub r0, r8               // Grid size
-        mov r1, #GRID_INSETS     // Start y
+        mov r1, r8               // Start y
         bl draw_selection
         b draw_weaving_draft__end
 
 draw_weaving_draw__selection_tieup:
         mov r0, #DISPLAY_WIDTH   // Start x
-        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Spacing
         sub r0, r8               // Grid size
-        mov r1, #GRID_INSETS     // Start y
+        mov r1, r8               // Start y
         bl draw_selection
         b draw_weaving_draft__end
         
 draw_weaving_draw__selection_treadling:
         mov r0, #DISPLAY_WIDTH   // Start x
-        sub r0, #GRID_INSETS     // Spacing
+        sub r0, r8               // Spacing
         sub r0, r8               // Grid size
         
         // TODO: Rewrite these offsets so we don't have to duplicate
         // it multiple times.
         mov r1, r4               // Start y
         mul r1, r1, r8           // Grid size
-        add r1, r1, #GRID_INSETS // Top
-        add r1, r1, #GRID_INSETS // Spacing
+        add r1, r1, r8           // Top
+        add r1, r1, r8           // Spacing
         
         bl draw_selection
         b draw_weaving_draft__end
@@ -723,12 +723,12 @@ draw_selection_box:
         ldr r5, =GRID_SIZE
         ldr r5, [r5]
 
-        sub r0, r0, #4          // Offset
-        sub r1, r1, #4          // Offset
+        sub r0, r0, #2          // Offset
+        sub r1, r1, #2          // Offset
         mul r2, r2, r5          // Multiply with grid size
-        add r2, r2, #8          // Offset
+        add r2, r2, #4          // Offset
         mul r3, r3, r5          // Multiply with grid size
-        add r3, r3, #8          // Offset
+        add r3, r3, #4          // Offset
         mov r4, #2              // Stroke width
         bl draw_box
 
