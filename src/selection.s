@@ -404,6 +404,16 @@ select_treadling:
         it eq
         streq r3, [r2]
 
+        // Shrink treadling count when all values in the last row have
+        // been deselected.
+        cmp r4, r3
+        bne select_treadling__end
+        cmp r5, #0
+        sub r3, r3, #1
+        it eq
+        streq r3, [r2]
+
+select_treadling__end:  
         pop {r4-r5}
         pop {lr}
         bx lr
