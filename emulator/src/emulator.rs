@@ -70,13 +70,23 @@ impl Emulator<'_> {
         let end = 0xB000_0000;
 
         let gpioc_odr = Arc::new(Mutex::new(0));
+        let gpioc_moder = Arc::new(Mutex::new(0));
+        let gpiob_moder = Arc::new(Mutex::new(0));
+        let gpiob_afrh = Arc::new(Mutex::new(0));
         let spi_cr1 = Arc::new(Mutex::new(0));
         let spi_dr = Arc::new(Mutex::new(0));
+        let rcc_apb1enr = Arc::new(Mutex::new(0));
+        let rcc_ahb1enr = Arc::new(Mutex::new(0));
 
         let read_cb = {
             let gpioc_odr_read = Arc::clone(&gpioc_odr);
+            let gpioc_moder_read = Arc::clone(&gpioc_moder);
+            let gpiob_moder_read = Arc::clone(&gpiob_moder);
+            let gpiob_afrh_read = Arc::clone(&gpiob_afrh);
             let spi_cr1_read = Arc::clone(&spi_cr1);
             let spi_dr_read = Arc::clone(&spi_dr);
+            let rcc_apb1enr_read = Arc::clone(&rcc_apb1enr);
+            let rcc_ahb1enr_read = Arc::clone(&rcc_ahb1enr);
 
             move |_uc: &mut Unicorn<'_, ()>, addr, _size| {
                 match start + addr as u32 {
@@ -85,9 +95,34 @@ impl Emulator<'_> {
                         let value = keyboard.get_register_value();
                         value
                     }
+                    0x40023830 => {
+                        let value = *rcc_ahb1enr_read.lock().unwrap();
+                        println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".cyan(), value);
+                        value
+                    }
+                    0x40023840 => {
+                        let value = *rcc_apb1enr_read.lock().unwrap();
+                        println!("{} read: 0x{:08x?}", "RCC_APB1ENR".cyan(), value);
+                        value
+                    }
+                    0x40020800 => {
+                        let value = *gpioc_moder_read.lock().unwrap();
+                        println!("{} read: 0x{:08x?}", "GPIOC_MODER".magenta(), value);
+                        value
+                    }
                     0x40020814 => {
                         let value = *gpioc_odr_read.lock().unwrap();
                         println!("{} read: 0x{:08x?}", "GPIOC_ODR".magenta(), value);
+                        value
+                    }
+                    0x40020400 => {
+                        let value = *gpiob_moder_read.lock().unwrap();
+                        println!("{} read: 0x{:08x?}", "GPIOB_MODER".magenta(), value);
+                        value
+                    }
+                    0x40020424 => {
+                        let value = *gpiob_afrh_read.lock().unwrap();
+                        println!("{} read: 0x{:08x?}", "GPIOB_AFRH".magenta(), value);
                         value
                     }
                     0x40003800 => {
@@ -119,18 +154,26 @@ impl Emulator<'_> {
 
         let write_cb = {
             let gpioc_odr_write = Arc::clone(&gpioc_odr);
+            let gpioc_moder_write = Arc::clone(&gpioc_moder);
+            let gpiob_moder_write = Arc::clone(&gpiob_moder);
+            let gpiob_afrh_write = Arc::clone(&gpiob_afrh);
             let spi_cr1_write = Arc::clone(&spi_cr1);
             let spi_dr_write = Arc::clone(&spi_dr);
+            let rcc_apb1enr_write = Arc::clone(&rcc_apb1enr);
+            let rcc_ahb1enr_write = Arc::clone(&rcc_ahb1enr);
 
             move |_uc: &mut Unicorn<'_, ()>, addr, _size, value| {
                 match start + addr as u32 {
                     0x40023830 => {
-                        println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".magenta(), value);
+                        *rcc_ahb1enr_write.lock().unwrap() = value;
+                        println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".cyan(), value);
                     }
                     0x40023840 => {
-                        println!("{} write: 0x{:08x?}", "RCC_APB1ENR".magenta(), value);
+                        *rcc_apb1enr_write.lock().unwrap() = value;
+                        println!("{} write: 0x{:08x?}", "RCC_APB1ENR".cyan(), value);
                     }
                     0x40020800 => {
+                        *gpioc_moder_write.lock().unwrap() = value;
                         println!("{} write: 0x{:08x?}", "GPIOC_MODER".magenta(), value);
                     }
                     0x40020814 => {
@@ -141,9 +184,11 @@ impl Emulator<'_> {
                         println!("{} write: 0x{:08x?}", "GPIOB_MODER".magenta(), value);
                     }
                     0x40020414 => {
+                        *gpiob_moder_write.lock().unwrap() = value;
                         println!("{} write: 0x{:08x?}", "GPIOB_ODR".magenta(), value);
                     }
                     0x40020424 => {
+                        *gpiob_afrh_write.lock().unwrap() = value;
                         println!("{} write: 0x{:08x?}", "GPIOB_AFRH".magenta(), value);
                     }
                     0x40003800 => {
