@@ -382,10 +382,10 @@ select_treadling:
         mov r4, #1
         lsl r4, r1
 
-        // Toggle the x-position bit in the treadling pattern.
-        ldr r5, [r0]
-        eor r5, r5, r4
-        str r5, [r0]
+        // Write the x-position bit back to the treadling pattern
+        // address. By writing only the current x-position, we only
+        // allow setting one treadle at the time.
+        str r4, [r0]
 
         // Check if the selected y-position is larger than the
         // treadling pattern count and increase it.
