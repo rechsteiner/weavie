@@ -75,6 +75,14 @@ x/20c $r1
 - J-Link: [SEGGER J-Link EDU Mini](https://www.adafruit.com/product/3571)
 - Keys: [NeoKey - Four Mechanical Key Switches](https://www.adafruit.com/product/4980)
 
+## Wiring
+
+- 3.3V to display VIN (power)
+- GND to display GND (ground)
+- SCK to display CLK (clock)
+- MO (MOSI) to display DI (data input)
+- PIN6 to display CS (chip-select)
+
 ## Weaving
 
 - [How to Read a Weaving Draft](https://www.gistyarn.com/blogs/how-to-weave/how-to-read-a-weaving-draft)
