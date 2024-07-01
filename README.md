@@ -1,6 +1,28 @@
 # Weavie
 
+Weavie is an ongoing project to create a tiny, physical weaving
+pattern computer using only 32-bit ARM assembly. I wanted to learn
+more about embedded development and assembly programming, and building
+a weaving pattern editor seemed like a fun challenge. Weavie is built
+for the [STM32 board](https://www.adafruit.com/product/4382), and has
+its own basic emulator based on Rust and
+[Unicorn](https://www.unicorn-engine.org).
+
+<br/>
+
+<img width="800" alt="images" src="https://github.com/rechsteiner/weavie/assets/1238984/1698ad58-dce0-4906-8e87-e511896c5914">
+
 ## Getting Started
+
+### Requirements
+
+All dependencies are defined in `shell.nix`. Run:
+
+```
+nix-shell
+```
+
+Or install using your preferred package manager.
 
 ### Running in emulator
 
@@ -88,26 +110,16 @@ x/20c $r1
 - [How to Read a Weaving Draft](https://www.gistyarn.com/blogs/how-to-weave/how-to-read-a-weaving-draft)
 - [Reading a Weaving Draft](https://www.youtube.com/watch?v=qD6bKAhlDuI)
 
-## ARM Assembly
-
-### Startup
-
-The startup.s file is reponsible for setting up the program. Since we don't have any operating system, we need to tell the microprocessor about our reset handler and interrupt vectors.
-
-### File extension
-All assembly code is defined in .s files. This convention is especially prevalent in toolchains like the GCC ARM toolchain. The .asm extension is more historically associated with x86 assembly and toolchains like MASM or NASM, though it's used for other architectures as well.
-
-## Resources
+## Documentation
 
 - [STM32F405 Datasheet](https://www.st.com/resource/en/datasheet/stm32f405rg.pdf)
 - [STM32F405 Reference Manual](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
-- [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
 - [Adafruit STM32F405 Feather Express Pinouts](https://learn.adafruit.com/adafruit-stm32f405-feather-express/pinouts)
 - [Adafruit NeoKey 1x4 Pinouts](https://learn.adafruit.com/neokey-1x4-qt-i2c/pinouts)
 - [SHARP Display Datasheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1272/LS027B7DH01_Rev_Jun_2010.pdf)
 - [Sharp Memory Display Wiring Guide](https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/displays/wiring-guide-sharp-memory-2.7-spi.md)
 
-## Articles
+## Resources
 
 - [Hello, world" in ARM assembly](https://lcvisser.github.io/arm/2021/05/23/hello-world-arm-assembly.html)
 - [Bare-metal C programming on ARM](https://github.com/umanovskis/baremetal-arm)
@@ -118,3 +130,5 @@ All assembly code is defined in .s files. This convention is especially prevalen
 - [Emulating an STM32F4 in QEMU to test ARM assembly](https://mcla.ug/blog/emulating-stm32-qemu.html)
 - [Programming of ARM Cortex-M microcontrollers](http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html)
 - [SPI: The serial peripheral interface](https://www.youtube.com/watch?v=MCi7dCBhVpQ)
+- [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
+
