@@ -1,12 +1,6 @@
 # Weavie
 
-Weavie is an ongoing project to create a tiny, physical weaving
-pattern computer using only 32-bit ARM assembly. I wanted to learn
-more about embedded development and assembly programming, and building
-a weaving pattern editor seemed like a fun challenge. Weavie is built
-for the [STM32 board](https://www.adafruit.com/product/4382), and has
-its own basic emulator based on Rust and
-[Unicorn](https://www.unicorn-engine.org).
+Weavie is a tiny physical weaving pattern machine, implemented entirely in 32-bit ARM assembly. It's a silly little project, created to learn more about embedded development and assembly programming. It contains a basic [display driver](https://github.com/rechsteiner/weavie/blob/main/src/display.s), keyboard [selection handling](https://github.com/rechsteiner/weavie/blob/main/src/selection.s) and rendering capabilities for [weaving patterns](https://github.com/rechsteiner/weavie/blob/main/src/weaving_draft.s). Its designed for the [Feather STM32 board](https://www.adafruit.com/product/4382) and the [SHARP 2.7" LCD display](https://www.adafruit.com/product/4694). It also has its own emulator based on Rust and [Unicorn](https://www.unicorn-engine.org) that lets you run it locally.
 
 <br/>
 
@@ -22,13 +16,17 @@ All dependencies are defined in `shell.nix`. Run:
 nix-shell
 ```
 
-Or install using your preferred package manager.
+Or install the depedencies listed in `shell.nix` using your preferred package manager.
 
 ### Running in emulator
 
 ```
 make
 ```
+
+- Use WASD to move the selection
+- Q to switch between the threading, tieup and treadling (see [How to Read a Weaving Draft](https://www.gistyarn.com/blogs/how-to-weave/how-to-read-a-weaving-draft))
+- E to toggle the selected square
 
 ### Running on hardware
 
