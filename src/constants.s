@@ -30,6 +30,13 @@
 .equ SPI_SR, SPI2 + 0x08
 .equ SPI_DR, SPI2 + 0x0C
 
+// SysTick Control and Status Register
+// https://developer.arm.com/documentation/100166/0001/System-Control/System-control-registers
+.equ SYST, 0xE000E000
+.equ SYST_CSR, SYST + 0x10
+.equ SYST_RVR, SYST + 0x14
+.equ SYST_CVR, SYST + 0x18
+
 // SHARP Memory Display resolution.
 .equ DISPLAY_WIDTH, 400
 .equ DISPLAY_HEIGHT, 240
@@ -57,6 +64,9 @@
 .equ SELECTED_GRID, 0x20006EE0
 .equ SELECTED_X, 0x20006EE4
 .equ SELECTED_Y, 0x20006EE8
+
+// Current delay tick
+.equ CURRENT_TICK, 0x20007000
 
 // Keyboard values.
 .equ KEY_SWITCH, 1 << 5

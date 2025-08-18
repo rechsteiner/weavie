@@ -27,6 +27,7 @@ build/main.bin: build/main.elf
 
 build/main.elf: build/startup.o \
 	build/main.o \
+	build/systick.o \
 	build/display.o \
 	build/keyboard.o \
 	build/utils.o \

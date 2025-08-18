@@ -60,7 +60,7 @@ vector_table:
         .word default_handler   // Debug Monitor
         .word 0                 // Reserved
         .word default_handler   // Pendable request for system service
-        .word default_handler   // System tick timer
+        .word systick_handler   // System tick timer
 
 .type reset_handler, %function
 

@@ -1,6 +1,7 @@
 .global main
 
 main:
+        bl setup_systick
         bl setup_display
         bl setup_keyboard
         bl setup_selection
@@ -10,6 +11,7 @@ main:
 draw:
         bl draw_logo
         bl refresh_display
+        ldr r0, =1000
         bl delay
         bl draw_weaving_draft
         bl refresh_display

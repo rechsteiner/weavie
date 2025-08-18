@@ -7,8 +7,10 @@ Blinking a LED using led.s:
 
 blink:
         bl enable_led
+        ldr r0, =500
         bl delay
         bl disable_led
+        ldr r0, =500
         bl delay
         b blink
 ```
