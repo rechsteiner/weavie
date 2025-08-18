@@ -26,6 +26,7 @@ build/main.bin: build/main.elf
 	arm-none-eabi-objcopy -O binary build/main.elf build/main.bin
 
 build/main.elf: build/startup.o \
+	build/main.o \
 	build/display.o \
 	build/keyboard.o \
 	build/utils.o \
