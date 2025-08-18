@@ -23,7 +23,7 @@ setup_led:
         // 0x10000 to make GPIOC6 an output.
         ldr r1, =GPIOC_MODER
         ldr r0, [r1]
-        orr r0, r0, #0b01000000000000
+        orr r0, r0, #0b0100
         str r0, [r1]
         bx lr
 
@@ -31,7 +31,7 @@ setup_led:
 enable_led:
         ldr r1, =GPIOC_ODR
         ldr r0, [r1]
-        orr r0, r0, #0b1000000
+        orr r0, r0, #0b10
         str r0, [r1]
         bx lr
 
@@ -39,6 +39,6 @@ enable_led:
 disable_led:
         ldr r1, =GPIOC_ODR
         ldr r0, [r1]
-        bic r0, r0, #0b1000000
+        bic r0, r0, #0b10
         str r0, [r1]
         bx lr

@@ -32,6 +32,7 @@ build/main.elf: build/startup.o \
 	build/graphics.o \
 	build/weaving_draft.o \
 	build/selection.o \
+	build/led.o \
 	build/logo.o \
 	build/prefill.o
 	arm-none-eabi-ld -T linker.ld -o $@ $^
