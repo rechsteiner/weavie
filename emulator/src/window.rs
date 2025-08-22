@@ -62,7 +62,7 @@ pub fn create_window(
                                 let scaled_x = (original_x % original_width) * scale + dx;
                                 let scaled_y = (original_x / original_width) * scale + dy;
                                 // Calculate the index in the scaled buffer
-                                let scaled_index = (scaled_y * width as usize + scaled_x) as usize;
+                                let scaled_index = scaled_y * width as usize + scaled_x;
                                 // Set the color for the scaled pixel
                                 let pixel = if is_set { 0xDDDDDDDD } else { 0x00000000 };
                                 buffer[scaled_index] = pixel;

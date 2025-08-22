@@ -2,6 +2,7 @@ use crate::display::Display;
 use crate::keyboard::Keyboard;
 
 use colored::*;
+use std::collections::HashMap;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -9,6 +10,40 @@ use unicorn_engine::{
     unicorn_const::{uc_error, Arch, Mode, Permission},
     RegisterARM, Unicorn,
 };
+
+const RCC_AHB1ENR: u32 = 0x40023830;
+const RCC_APB1ENR: u32 = 0x40023840;
+const GPIOC_MODER: u32 = 0x40020800;
+const GPIOC_ODR: u32 = 0x40020814;
+const GPIOC_IDR: u32 = 0x40020810;
+const GPIOB_MODER: u32 = 0x40020400;
+const GPIOB_ODR: u32 = 0x40020414;
+const GPIOB_AFRH: u32 = 0x40020424;
+const SPI_CR1: u32 = 0x40003800;
+const SPI_DR: u32 = 0x4000380C;
+const SPI_SR: u32 = 0x40003808;
+const SYST_CSR: u32 = 0xE000E010;
+const SYST_RVR: u32 = 0xE000E014;
+const SYST_CVR: u32 = 0xE000E018;
+const DEBUG: u32 = 0x40010000;
+
+fn register_info(register: u32) -> colored::ColoredString {
+    match register {
+        RCC_AHB1ENR => "RCC_AHB1ENR".cyan(),
+        RCC_APB1ENR => "RCC_APB1ENR".cyan(),
+        GPIOC_MODER => "GPIOC_MODER".magenta(),
+        GPIOC_ODR => "GPIOC_ODR".magenta(),
+        GPIOB_MODER => "GPIOB_MODER".magenta(),
+        GPIOB_ODR => "GPIOB_ODR".magenta(),
+        GPIOB_AFRH => "GPIOB_AFRH".magenta(),
+        SYST_CSR => "SYST_CSR".blue(),
+        SYST_CVR => "SYST_CVR".blue(),
+        SYST_RVR => "SYST_RVR".blue(),
+        SPI_CR1 => "SPI_CR1".blue(),
+        SPI_DR => "SPI_DR".blue(),
+        _ => "UNKNOWN".white(),
+    }
+}
 
 struct InterruptFrame {
     pc: u64,
@@ -62,9 +97,8 @@ impl Emulator<'_> {
         // interrupts. If 1ms has elapsed and we're not already in an
         // interrupt, trigger SysTick by saving the CPU context and
         // jumping to the handler. When the interrupt handler returns
-        // (via 0xFFFFFFF9 link register), it causes an EXCEPTION. We
-        // use this to restore the CPU context and continue execution
-        // from where we left off before the interrupt.
+        // it causes an EXCEPTION, where we can restore the CPU
+        // context and continue execution from before the interrupt.
         let result = self.unicorn.emu_start(self.next_pc, 0, 0, 1000);
 
         match result {
@@ -120,7 +154,8 @@ impl Emulator<'_> {
 
         self.interrupt_frame = Some(frame);
 
-        // Set magic LR value for interrupt return.
+        // Set magic LR value for interrupt return. When the interrupt
+        // handler branches back to this it throws an exception.
         self.unicorn.reg_write(RegisterARM::LR, 0xFFFFFFF9)?;
 
         // Set the program counter to the systick handler.
@@ -168,7 +203,7 @@ impl Emulator<'_> {
 
     fn map_ram_memory(&mut self) {
         let sram_size = 0x20000;
-        let sram_zeroes = vec![0_u8; sram_size as usize];
+        let sram_zeroes = vec![0_u8; sram_size];
 
         self.unicorn
             .mem_map(0x20000000, sram_size, Permission::ALL)
@@ -182,79 +217,35 @@ impl Emulator<'_> {
     fn map_peripherals(&mut self, display: Arc<Mutex<Display>>, keyboard: Arc<Mutex<Keyboard>>) {
         let start = 0x4000_0000;
         let end = 0xF000_0000;
-
-        let gpioc_odr = Arc::new(Mutex::new(0));
-        let gpioc_moder = Arc::new(Mutex::new(0));
-        let gpiob_moder = Arc::new(Mutex::new(0));
-        let gpiob_afrh = Arc::new(Mutex::new(0));
-        let spi_cr1 = Arc::new(Mutex::new(0));
-        let spi_dr = Arc::new(Mutex::new(0));
-        let rcc_apb1enr = Arc::new(Mutex::new(0));
-        let rcc_ahb1enr = Arc::new(Mutex::new(0));
+        let registers = Arc::new(Mutex::new(HashMap::<u32, u64>::new()));
 
         let read_cb = {
-            let gpioc_odr_read = Arc::clone(&gpioc_odr);
-            let gpioc_moder_read = Arc::clone(&gpioc_moder);
-            let gpiob_moder_read = Arc::clone(&gpiob_moder);
-            let gpiob_afrh_read = Arc::clone(&gpiob_afrh);
-            let spi_cr1_read = Arc::clone(&spi_cr1);
-            let spi_dr_read = Arc::clone(&spi_dr);
-            let rcc_apb1enr_read = Arc::clone(&rcc_apb1enr);
-            let rcc_ahb1enr_read = Arc::clone(&rcc_ahb1enr);
+            let registers_read = registers.clone();
 
             move |_uc: &mut Unicorn<'_, ()>, addr, _size| {
-                match start + addr as u32 {
-                    0x40020810 => {
+                let register = start + addr as u32;
+
+                match register {
+                    RCC_AHB1ENR | RCC_APB1ENR | GPIOC_MODER | GPIOC_ODR | GPIOB_MODER
+                    | GPIOB_AFRH | SPI_CR1 => {
+                        let mut guard = registers_read.lock().unwrap();
+                        let value = *guard.entry(register).or_insert(0);
+                        println!("{} read: 0x{:08x?}", register_info(register), value);
+                        value
+                    }
+                    SPI_DR | SYST_CSR | SYST_CVR | SYST_RVR => {
+                        let mut guard = registers_read.lock().unwrap();
+                        let value = *guard.entry(register).or_insert(0);
+                        value
+                    }
+                    GPIOC_IDR => {
                         let keyboard = keyboard.lock().unwrap();
-                        let value = keyboard.get_register_value();
-                        value
+                        keyboard.get_register_value()
                     }
-                    0x40023830 => {
-                        let value = *rcc_ahb1enr_read.lock().unwrap();
-                        println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".cyan(), value);
-                        value
-                    }
-                    0x40023840 => {
-                        let value = *rcc_apb1enr_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "RCC_APB1ENR".cyan(), value);
-                        value
-                    }
-                    0x40020800 => {
-                        let value = *gpioc_moder_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "GPIOC_MODER".magenta(), value);
-                        value
-                    }
-                    0x40020814 => {
-                        let value = *gpioc_odr_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "GPIOC_ODR".magenta(), value);
-                        value
-                    }
-                    0x40020400 => {
-                        let value = *gpiob_moder_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "GPIOB_MODER".magenta(), value);
-                        value
-                    }
-                    0x40020424 => {
-                        let value = *gpiob_afrh_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "GPIOB_AFRH".magenta(), value);
-                        value
-                    }
-                    0x40003800 => {
-                        let value = *spi_cr1_read.lock().unwrap();
-                        println!("{} read: 0x{:08x?}", "SPI_CR1".blue(), value);
-                        value
-                    }
-                    0x4000380C => {
-                        let value = *spi_dr_read.lock().unwrap();
-                        // println!("{} read: 0x{:08x?}", "SPI_DR".blue(), value);
-                        value
-                    }
-                    0x40003808 => {
-                        // SPI_SR (status register)
+                    SPI_SR => {
                         // Simulate transfer buffer empty
                         0b11
                     }
-                    0xE000E010 | 0xE000E014 | 0xE000E018 => 0, // SysTick registers
                     _ => {
                         println!(
                             "{} read:\t0x{:08x}",
@@ -268,60 +259,29 @@ impl Emulator<'_> {
         };
 
         let write_cb = {
-            let gpioc_odr_write = Arc::clone(&gpioc_odr);
-            let gpioc_moder_write = Arc::clone(&gpioc_moder);
-            let gpiob_moder_write = Arc::clone(&gpiob_moder);
-            let gpiob_afrh_write = Arc::clone(&gpiob_afrh);
-            let spi_cr1_write = Arc::clone(&spi_cr1);
-            let spi_dr_write = Arc::clone(&spi_dr);
-            let rcc_apb1enr_write = Arc::clone(&rcc_apb1enr);
-            let rcc_ahb1enr_write = Arc::clone(&rcc_ahb1enr);
+            let registers_write = registers.clone();
 
             move |_uc: &mut Unicorn<'_, ()>, addr, _size, value| {
-                match start + addr as u32 {
-                    0x40023830 => {
-                        *rcc_ahb1enr_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "RCC_AHB1ENR".cyan(), value);
+                let register = start + addr as u32;
+
+                match register {
+                    RCC_AHB1ENR | RCC_APB1ENR | GPIOC_MODER | GPIOC_ODR | GPIOB_MODER
+                    | GPIOB_AFRH | SPI_CR1 => {
+                        registers_write.lock().unwrap().insert(register, value);
+                        println!("{} write: 0x{:08x?}", register_info(register), value);
                     }
-                    0x40023840 => {
-                        *rcc_apb1enr_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "RCC_APB1ENR".cyan(), value);
+                    SYST_CSR | SYST_CVR | SYST_RVR => {
+                        registers_write.lock().unwrap().insert(register, value);
                     }
-                    0x40020800 => {
-                        *gpioc_moder_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "GPIOC_MODER".magenta(), value);
-                    }
-                    0x40020814 => {
-                        *gpioc_odr_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "GPIOC_ODR".magenta(), value);
-                    }
-                    0x40020400 => {
-                        println!("{} write: 0x{:08x?}", "GPIOB_MODER".magenta(), value);
-                    }
-                    0x40020414 => {
-                        *gpiob_moder_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "GPIOB_ODR".magenta(), value);
-                    }
-                    0x40020424 => {
-                        *gpiob_afrh_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "GPIOB_AFRH".magenta(), value);
-                    }
-                    0x40003800 => {
-                        *spi_cr1_write.lock().unwrap() = value;
-                        println!("{} write: 0x{:08x?}", "SPI_CR1".blue(), value);
-                    }
-                    0x4000380C => {
+                    SPI_DR => {
                         // Send the data to the display
                         let mut display = display.lock().unwrap();
                         display.receive(value as u8);
-
-                        *spi_dr_write.lock().unwrap() = value;
-                        // println!("{} write: 0x{:08x?}", "SPI_DR".blue(), value);
+                        registers_write.lock().unwrap().insert(register, value);
                     }
-                    0x40010000 => {
+                    DEBUG => {
                         println!("{}: 0b{:08b}", "DEBUG".yellow(), value);
                     }
-                    0xE000E010 | 0xE000E014 | 0xE000E018 => {} // SysTick registers
                     _ => {
                         println!(
                             "{} write:\t0x{:08x} value: 0x{:08x?}",
