@@ -777,11 +777,21 @@ draw_selection:
         ldr r9, =SHOW_SELECTION
         ldr r9, [r9]
         cmp r9, #0
-        beq draw_selection__end
+        beq draw_selection__clear
         
         // Draw the current selection as a rectangle on top of the
         // existing weaving draft.
         bl draw_rectangle
+        b draw_selection__end
+
+draw_selection__clear:
+        // Adjust rectangle to adjust for grid lines.
+        add r0, r0, #1
+        add r1, r1, #1
+        sub r2, r2, #1
+        sub r3, r3, #1
+        
+        bl clear_rectangle_checkered
         
 draw_selection__end:
         pop {r4-r9}

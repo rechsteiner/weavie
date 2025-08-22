@@ -11,6 +11,7 @@
 .global draw_grid
 .global draw_box
 .global reset_drawing
+.global clear_rectangle_checkered
 
 // Draws a point at the given x (r0) and y (r1) coordinates.
 draw_point:
@@ -277,3 +278,131 @@ reset_drawing__loop:
 reset_drawing__end:
         pop {lr}
         bx lr
+
+// Clears a rectangle at position x (r0) and y (r1) with width (r2) and
+// height (r3) in pixels, using a checker pattern.
+clear_rectangle_checkered:
+        push {lr}
+        push {r4-r7}
+        
+        mov r4, r0
+        mov r5, r1
+        mov r6, r2
+        mov r7, r3
+
+clear_rectangle__loop:
+        // Set up parameters for clear_point (x: r4, y: r5)
+        mov r0, r4
+        mov r1, r5
+        mov r2, r6
+        bl clear_horizontal_line
+        
+        adds r5, r5, #1
+        subs r7, r7, #1
+        bne clear_rectangle__loop
+
+clear_rectangle__end:
+        pop {r4-r7}
+        pop {lr}
+        bx lr
+
+// Clears a horizontal line at the given x (r0) and y (r1) coordinates
+// with a given length r (r2).
+clear_horizontal_line:
+        push {lr}
+        push {r4-r6}
+
+        // Skip to the end if the line width is zero.
+        cmp r2, #0
+        beq clear_horizontal_line__end
+
+        mov r4, r0
+        mov r5, r1
+        mov r6, r2
+
+clear_horizontal_line__loop:
+        // Set up parameters for clear_point (x: r4, y: r5)
+        mov r0, r4
+        mov r1, r5
+
+        // Alternate between skipping odd or even point for each
+        // row. This ends up creating a checker pattern.
+        tst r1, #1
+        beq clear_horizontal_line__loop_skip_odd
+
+clear_horizontal_line__loop_skip_even:  
+        tst r0, #1
+        beq clear_horizontal_line__loop_end
+        b clear_horizontal_line__loop_clear
+        
+clear_horizontal_line__loop_skip_odd:
+        tst r0, #1
+        bne clear_horizontal_line__loop_end  
+
+clear_horizontal_line__loop_clear:      
+        bl clear_point
+        
+clear_horizontal_line__loop_end:        
+        // Increment x-coordinate
+        adds r4, r4, #1
+        
+        // Continue clearing until there are more no more points to clear
+        subs r6, r6, #1
+        bne clear_horizontal_line__loop 
+
+clear_horizontal_line__end:
+        pop {r4-r6}
+        pop {lr}
+        bx lr
+
+// Clears a point at the given x (r0) and y (r1) coordinates.
+clear_point:
+        push {lr}
+        push {r4-r7}
+
+        // Skip clearing if the x-value is outside the bounds.
+        mov r2, #DISPLAY_WIDTH
+        sub r2, r2, #1
+        cmp r0, r2
+        bgt clear_point__end
+        cmp r0, #-1
+        ble clear_point__end
+
+        // Skip clearing if the y-value is outside the bounds.
+        mov r2, #DISPLAY_HEIGHT
+        sub r2, r2, #1
+        cmp r1, r2
+        bgt clear_point__end
+        cmp r1, #-1
+        ble clear_point__end
+
+        // Load frame buffer start address into r4
+        ldr r3, =FRBUF
+        
+        // Calculate the byte offset by dividing the bit offset by 8 (right shift by 3)
+        lsr r4, r0, #3
+        
+        // Add the byte offset to the frame buffer start address. This
+        // ensures our offset is correct in the x-direction.
+        add r3, r3, r4   
+
+        // We also need to offset in the y-direction. This is done by
+        // multiplying the byte width (400/8=50) with r1 (the passed
+        // in y position), then add that offset to the base address.
+        ldr r7, =FRBUF_BYTES_PER_LINE
+        mul r6, r1, r7
+        add r3, r3, r6
+
+        and r0, r0, #7   // Calculate the bit position within the byte (x % 8)
+        mov r4, #1       // Create a mask with a 1 at the 0th bit
+        lsl r4, r4, r0   // Shift the mask to the correct bit position based on x
+        mvn r4, r4       // Invert all the bits
+        
+        ldr r5, [r3]     // Load the current byte from the frame buffer
+        and r5, r5, r4   // AND the mask with the current byte to clear the pixel
+        str r5, [r3]     // Store the modified byte back to the frame buffer
+
+clear_point__end:
+        pop {r4-r7}
+        pop {lr}
+        bx lr        
