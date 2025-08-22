@@ -6,6 +6,7 @@
 
 .global setup_selection
 .global handle_selection
+.global blink_selection
 
 setup_selection:
         push {lr}
@@ -69,9 +70,25 @@ handle_selection:
         bl pressed_keys
         beq handle_selection__switch
 
+        // Check if we need redraw due to cursor blinking.
+        ldr r0, =REDRAW_NEEDED
+        ldr r0, [r0]
+        cmp r0, #1
+        beq handle_selection__blink
+        
         // Set the return value to false.
         mov r0, #0
         b handle_selection__end
+
+handle_selection__blink:
+        // Reset the redraw flag.
+        ldr r0, =REDRAW_NEEDED
+        mov r1, #0
+        str r1, [r0]
+        
+        // Set the return value to true.
+        mov r0, #1
+        b handle_selection__end        
 
 handle_selection__switch:
         // Load the currently selected grid and increment by one.
@@ -415,5 +432,37 @@ select_treadling:
 
 select_treadling__end:  
         pop {r4-r5}
+        pop {lr}
+        bx lr
+
+blink_selection:
+        push {lr}
+        
+        // Increment the current tick
+        ldr r0, =SELECTION_TICK
+        ldr r1, [r0]
+        add r1, r1, #1
+        str r1, [r0]
+
+        // Check if it's been 300ms
+        cmp r1, #300
+        ble blink_selection__return
+
+        // Reset the current tick
+        mov r1, #0
+        str r1, [r0]
+
+        // Toggle the selection
+        ldr r0, =SHOW_SELECTION
+        ldr r1, [r0]
+        eor r1, r1, #1
+        str r1, [r0]
+
+        // Set flag for main loop to redraw
+        ldr r0, =REDRAW_NEEDED
+        mov r1, #1
+        str r1, [r0]
+
+blink_selection__return:
         pop {lr}
         bx lr

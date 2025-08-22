@@ -16,7 +16,7 @@ setup_systick:
         cpsie i
         
         // Reset current tick
-        ldr r0, =CURRENT_TICK
+        ldr r0, =DELAY_TICK
         ldr r1, =0
         str r1, [r0]
         
@@ -41,6 +41,7 @@ setup_systick:
 
 systick_handler:
         push {lr}
+        bl blink_selection
         bl delay_increment
         pop {lr}
         bx lr

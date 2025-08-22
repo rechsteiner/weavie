@@ -740,7 +740,7 @@ draw_selection_box:
 // starting position (r0, r1).
 draw_selection:
         push {lr}
-        push {r4-r8}
+        push {r4-r9}
         
         // Load the current selection from memory.
         ldr r4, =SELECTED_X
@@ -772,11 +772,18 @@ draw_selection:
         mov r2, r8
         mov r3, r8
 
+        // Skip drawing the selected cell if SHOW_SELECTION is
+        // false. This is used to blink the cursor.
+        ldr r9, =SHOW_SELECTION
+        ldr r9, [r9]
+        cmp r9, #0
+        beq draw_selection__end
+        
         // Draw the current selection as a rectangle on top of the
         // existing weaving draft.
         bl draw_rectangle
         
-        pop {r4-r8}
+draw_selection__end:
+        pop {r4-r9}
         pop {lr}
-        
         bx lr
