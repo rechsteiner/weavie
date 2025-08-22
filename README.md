@@ -66,34 +66,11 @@ Debugging in gdb:
 make debug
 ```
 
-Step through assembly instruction:
-
-```
-si
-```
-
-Inspect register state:
-
-```
-info registers
-```
-
-Inspect memory address:
-
-```
-p/x 0x40020800
-x $r2
-x/t $r1
-x/10x $r1
-x/20c $r1
-```
-
 ## Hardware
 
 - Board: [Adafruit Feather STM32F405 Cortex M4](https://www.adafruit.com/product/4382)
 - Display: [Adafruit SHARP 2.7"](https://www.adafruit.com/product/4694)
 - J-Link: [SEGGER J-Link EDU Mini](https://www.adafruit.com/product/3571)
-- Keys: [NeoKey - Four Mechanical Key Switches](https://www.adafruit.com/product/4980)
 
 ## Wiring
 
@@ -113,7 +90,6 @@ x/20c $r1
 - [STM32F405 Datasheet](https://www.st.com/resource/en/datasheet/stm32f405rg.pdf)
 - [STM32F405 Reference Manual](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 - [Adafruit STM32F405 Feather Express Pinouts](https://learn.adafruit.com/adafruit-stm32f405-feather-express/pinouts)
-- [Adafruit NeoKey 1x4 Pinouts](https://learn.adafruit.com/neokey-1x4-qt-i2c/pinouts)
 - [SHARP Display Datasheet](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1272/LS027B7DH01_Rev_Jun_2010.pdf)
 - [Sharp Memory Display Wiring Guide](https://github.com/Moddable-OpenSource/moddable/blob/public/documentation/displays/wiring-guide-sharp-memory-2.7-spi.md)
 
