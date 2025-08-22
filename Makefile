@@ -1,3 +1,4 @@
+.PHONY: clean
 
 all: build/main.bin
 	cargo run --manifest-path emulator/Cargo.toml
