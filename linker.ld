@@ -12,5 +12,6 @@ SECTIONS
     {
         KEEP(*(.vector_table))
         *(.text*)
+        *(.rodata*)
     } >FLASH
 }

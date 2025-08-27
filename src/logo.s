@@ -60,7 +60,7 @@ draw_logo__end:
 // value 2 is used because alignment is specified as a power of two,
 // so 2 to the power of 2 equals 4-byte alignment.
 .align 2
-.section .data
+.section .rodata
 
 logo_data:
 	.word 0x01FF803F
