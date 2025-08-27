@@ -10,6 +10,7 @@ SECTIONS
 {
     .text :
     {
+        KEEP(*(.vector_table))
         *(.text*)
     } >FLASH
 }

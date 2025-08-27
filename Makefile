@@ -1,5 +1,8 @@
 .PHONY: clean
 
+SOURCES := $(wildcard src/*.s)
+OBJECTS := $(SOURCES:src/%.s=build/%.o)
+
 all: build/main.bin
 	cargo run --manifest-path emulator/Cargo.toml
 
@@ -26,22 +29,11 @@ disassemble: build/main.bin
 build/main.bin: build/main.elf
 	arm-none-eabi-objcopy -O binary build/main.elf build/main.bin
 
-build/main.elf: build/startup.o \
-	build/main.o \
-	build/systick.o \
-	build/display.o \
-	build/keyboard.o \
-	build/utils.o \
-	build/graphics.o \
-	build/weaving_draft.o \
-	build/selection.o \
-	build/led.o \
-	build/logo.o \
-	build/prefill.o
+build/main.elf: $(OBJECTS)
 	arm-none-eabi-ld -T linker.ld -o $@ $^
 
 build/%.o: src/%.s | build
-	arm-none-eabi-as -mthumb -Isrc $< -o $@
+	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mimplicit-it=always -Isrc $< -o $@
 
 build:
 	mkdir -p build

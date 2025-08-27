@@ -22,9 +22,10 @@
 // The .global directive is used to declare symbols that should be
 // visible outside the object file. We define two symbols, one for the
 // vector interrupt table and the reset handler.
-.global vector_table
 .global reset_handler
+.global vector_table
 
+.section .vector_table
 .type vector_table, %object
 
 vector_table:
