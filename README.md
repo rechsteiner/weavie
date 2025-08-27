@@ -1,6 +1,6 @@
 # Weavie
 
-Weavie is a tiny physical weaving pattern machine, implemented entirely in 32-bit ARM assembly. It's a silly little project, created to learn more about embedded development and assembly programming. It contains a basic [display driver](https://github.com/rechsteiner/weavie/blob/main/src/display.s), keyboard [selection handling](https://github.com/rechsteiner/weavie/blob/main/src/selection.s) and rendering capabilities for [weaving patterns](https://github.com/rechsteiner/weavie/blob/main/src/weaving_draft.s). Its designed for the [Feather STM32 board](https://www.adafruit.com/product/4382) and the [SHARP 2.7" LCD display](https://www.adafruit.com/product/4694). It also has its own emulator based on Rust and [Unicorn](https://www.unicorn-engine.org) that lets you run it locally.
+Weavie is a tiny physical weaving pattern machine, implemented entirely in 32-bit ARM assembly. It's a silly little project, created to learn more about embedded development and assembly programming. You can draw weaving patterns by changing the threading, tieup and treadling using its own little mechanical keyboard. It runs on this [STM32 board](https://www.adafruit.com/product/4382) with this [monochrome display](https://www.adafruit.com/product/4694). It also has its own emulator based on Rust for local development.
 
 <br/>
 
@@ -24,9 +24,10 @@ Or install the depedencies listed in `shell.nix` using your preferred package ma
 make
 ```
 
-- Use WASD to move the selection
+- WASD to move the cursor in the selected region.
 - Q to switch between the threading, tieup and treadling (see [How to Read a Weaving Draft](https://www.gistyarn.com/blogs/how-to-weave/how-to-read-a-weaving-draft))
-- E to toggle the selected square
+- WS to zoom in/out when there's no selected region.
+- E to toggle the selected square.
 
 ### Running on hardware
 
@@ -68,9 +69,8 @@ make debug
 
 ## Hardware
 
-- Board: [Adafruit Feather STM32F405 Cortex M4](https://www.adafruit.com/product/4382)
-- Display: [Adafruit SHARP 2.7"](https://www.adafruit.com/product/4694)
-- J-Link: [SEGGER J-Link EDU Mini](https://www.adafruit.com/product/3571)
+- Board: [Adafruit Feather STM32F405 Express](https://www.adafruit.com/product/4382)
+- Display: [Adafruit SHARP Memory Display 2.7"](https://www.adafruit.com/product/4694)
 
 ## Wiring
 
@@ -99,10 +99,8 @@ make debug
 - [Bare-metal C programming on ARM](https://github.com/umanovskis/baremetal-arm)
 - ["Bare Metal" STM32 Programming (Part 1): Hello, ARM!](https://vivonomicon.com/2018/04/02/bare-metal-stm32-programming-part-1-hello-arm/)
 - [A bare metal programming guide (ARM microcontrollers)](https://github.com/cpq/bare-metal-programming-guide)
-- [HelloSilicon: An introduction to ARM64 assembly on Apple Silicon Macs](https://github.com/below/HelloSilicon)
 - [ARM Assembly Internals & Reverse Engineering](https://arm-assembly.com)
 - [Emulating an STM32F4 in QEMU to test ARM assembly](https://mcla.ug/blog/emulating-stm32-qemu.html)
 - [Programming of ARM Cortex-M microcontrollers](http://svenssonjoel.github.io/pages-2021/cortex-m-assembler-0/index.html)
 - [SPI: The serial peripheral interface](https://www.youtube.com/watch?v=MCi7dCBhVpQ)
-- [Hubris STM32F4 config](https://github.com/oxidecomputer/hubris/tree/master/chips/stm32f4)
 
