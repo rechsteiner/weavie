@@ -29,16 +29,6 @@ setup_selection:
 handle_selection:
         push {lr}
         push {r4-r6}
-
-        // Zoom in
-        mov r0, KEY_SWITCH | KEY_SELECT
-        bl pressed_keys
-        beq handle_selection__zoom_in
-
-        // Zoom out
-        mov r0, KEY_SWITCH | KEY_UP
-        bl pressed_keys
-        beq handle_selection__zoom_out
         
         // Up
         mov r0, KEY_UP
@@ -174,11 +164,11 @@ handle_selection__down:
         ldr r4, =SELECTED_GRID
         ldr r4, [r4]
         
-        // Return false if the selected grid is zero.
+        // Zoom-out if the selected grid is zero.
         cmp r4, #0
         it eq
         moveq r0, #0
-        beq handle_selection__end
+        beq handle_selection__zoom_out
 
         // Load the maximum value based on the selected grid. For the
         // threading and tie-up, the shaft count is the max value,
@@ -212,13 +202,13 @@ handle_selection__down:
         b handle_selection__end
         
 handle_selection__up:
-        // Return false if the selected grid is zero.
+        // Zoom-in if the selected grid is zero.
         ldr r4, =SELECTED_GRID
         ldr r4, [r4]
         cmp r4, #0
         it eq
         moveq r0, #0
-        beq handle_selection__end
+        beq handle_selection__zoom_in
         
         // Subtract one from the selected y-position. If the
         // subtraction overflows we store zero instead.
