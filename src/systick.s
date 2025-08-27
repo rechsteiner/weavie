@@ -43,5 +43,6 @@ systick_handler:
         push {lr}
         bl blink_selection
         bl delay_increment
+        bl keyboard_increment
         pop {lr}
         bx lr

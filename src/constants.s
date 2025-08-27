@@ -70,6 +70,7 @@
 // Current delay tick
 .equ DELAY_TICK, 0x20007000
 .equ SELECTION_TICK, 0x20007004
+.equ KEYBOARD_TICK, 0x20007008
 
 // Keyboard values.
 .equ KEY_SWITCH, 1 << 5
