@@ -111,7 +111,10 @@ handle_selection__zoom_in:
         ldr r0, =GRID_SIZE
         ldr r1, [r0]
         add r1, r1, #1
-        str r1, [r0]
+        mov r2, #30             // Maximum value
+        cmp r1, r2              // Compare against min value
+        it lt                   
+        strlt r1, [r0]          // Store new value if it is less than max value.
         
         // Set the return value to true.
         mov r0, #1
