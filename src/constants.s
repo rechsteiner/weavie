@@ -40,37 +40,8 @@
 // SHARP Memory Display resolution.
 .equ DISPLAY_WIDTH, 400
 .equ DISPLAY_HEIGHT, 240
-
-// The frame buffer is used to store the memory for each pixel in the
-// display. The base address is just a place in SRAM where we can fit
-// all the bits. The display has 400x240 pixels, so the length of each
-// row (FRBUF_BYTES_PER_LINE) is 400/8=50 and it has 240 rows (FRBUF_LINES).
-.equ FRBUF, 0x20000000
 .equ FRBUF_BYTES_PER_LINE, DISPLAY_WIDTH/8
 .equ FRBUF_LINES, DISPLAY_HEIGHT
-
-// Weaving draft states.
-.equ THREADING_SHAFT_COUNT, 0x20002EE0
-.equ THREADING_PATTERN_COUNT, 0x20002EE4
-.equ THREADING, 0x20002EE8
-.equ TIEUP, 0x20003EE0
-.equ TREADLING_PATTERN_COUNT, 0x20004EE0
-.equ TREADLING, 0x20004EE4
-
-// Size of each grid when drawing. Change this to adjust the zoom-level.
-.equ GRID_SIZE, 0x20008EE0
-
-// Current selection.
-.equ SELECTED_GRID, 0x20006EE0
-.equ SELECTED_X, 0x20006EE4
-.equ SELECTED_Y, 0x20006EE8
-.equ SHOW_SELECTION, 0x20006EEC
-.equ REDRAW_NEEDED, 0x20006EF0
-
-// Current delay tick
-.equ DELAY_TICK, 0x20007000
-.equ SELECTION_TICK, 0x20007004
-.equ KEYBOARD_TICK, 0x20007008
 
 // Keyboard values.
 .equ KEY_SWITCH, 1 << 5
@@ -80,7 +51,6 @@
 .equ KEY_DOWN,   1 << 1
 .equ KEY_RIGHT,  1 << 0
 .equ KEY_MASK, KEY_SWITCH | KEY_UP | KEY_SELECT | KEY_LEFT | KEY_DOWN | KEY_RIGHT
-.equ KEY_PRESSED_STATE, 0x20005EE0
 
 // Number of bytes per register (4 bytes = 32-bits).
 .equ BYTES_PER_REG, 4

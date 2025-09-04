@@ -34,7 +34,7 @@ draw_point:
         ble draw_point__end
 
         // Load frame buffer start address into r4
-        ldr r3, =FRBUF
+        ldr r3, =framebuffer
         
         // Calculate the byte offset by dividing the bit offset by 8 (right shift by 3)
         lsr r4, r0, #3
@@ -265,7 +265,7 @@ draw_box__end:
 // Clear the frame buffer memory.
 reset_drawing:
         push {lr}
-        ldr r0, =FRBUF
+        ldr r0, =framebuffer
         ldr r1, =3000 // (400*240)/8=3000 registers
         mov r2, #0
 
@@ -376,7 +376,7 @@ clear_point:
         ble clear_point__end
 
         // Load frame buffer start address into r4
-        ldr r3, =FRBUF
+        ldr r3, =framebuffer
         
         // Calculate the byte offset by dividing the bit offset by 8 (right shift by 3)
         lsr r4, r0, #3

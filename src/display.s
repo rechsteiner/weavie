@@ -133,7 +133,7 @@ refresh_display__write:
 
         // Load the frame buffer address which will be used to
         // transfer the data.
-        ldr r1, =FRBUF
+        ldr r1, =framebuffer
         
 refresh_display__write_line:
         // Store a counter to keep track of when to move to the next

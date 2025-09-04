@@ -14,7 +14,7 @@ draw_logo:
         push {r4-r5}
 
         ldr r0, =logo_data
-        ldr r1, =FRBUF
+        ldr r1, =framebuffer
         ldr r4, =LOGO_HEIGHT
 
         // Offset the frame buffer address so the logo is centered.

@@ -1,6 +1,5 @@
 .syntax unified
 .section .text
-.include "constants.s"
 
 .global delay
 .global delay_increment
@@ -15,7 +14,7 @@ delay:
         cmp r0, #0
         beq delay__return
         
-        ldr r1, =DELAY_TICK
+        ldr r1, =delay_tick
         ldr r2, [r1]    // r2 = start_tick
 
 delay__loop:
@@ -32,7 +31,7 @@ delay__return:
         bx lr
 
 delay_increment:
-        ldr r0, =DELAY_TICK
+        ldr r0, =delay_tick
         ldr r1, [r0]
         add r1, r1, #1
         str r1, [r0]

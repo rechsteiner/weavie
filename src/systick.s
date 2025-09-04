@@ -15,7 +15,7 @@ setup_systick:
         cpsie i
         
         // Reset current tick
-        ldr r0, =DELAY_TICK
+        ldr r0, =delay_tick
         ldr r1, =0
         str r1, [r0]
         

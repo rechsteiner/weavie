@@ -11,13 +11,13 @@ setup_selection:
         push {lr}
         
         // Set the initial grid size
-        ldr r0, =GRID_SIZE
+        ldr r0, =grid_size
         mov r1, #8
         str r1, [r0]
 
         // Set the initial selected state to zero.
-        ldr r2, =SELECTED_X
-        ldr r3, =SELECTED_Y
+        ldr r2, =selected_x
+        ldr r3, =selected_y
         mov r0, #0
         str r0, [r2]
         str r0, [r3]
@@ -60,7 +60,7 @@ handle_selection:
         beq handle_selection__switch
 
         // Check if we need redraw due to cursor blinking.
-        ldr r0, =REDRAW_NEEDED
+        ldr r0, =redraw_needed
         ldr r0, [r0]
         cmp r0, #1
         beq handle_selection__blink
@@ -71,7 +71,7 @@ handle_selection:
 
 handle_selection__blink:
         // Reset the redraw flag.
-        ldr r0, =REDRAW_NEEDED
+        ldr r0, =redraw_needed
         mov r1, #0
         str r1, [r0]
         
@@ -81,7 +81,7 @@ handle_selection__blink:
 
 handle_selection__switch:
         // Load the currently selected grid and increment by one.
-        ldr r0, =SELECTED_GRID
+        ldr r0, =selected_grid
         ldr r1, [r0]
         add r1, r1, #1
 
@@ -96,8 +96,8 @@ handle_selection__switch:
 
         // Reset the selected x and y values
         mov r0, #0
-        ldr r1, =SELECTED_X
-        ldr r2, =SELECTED_Y
+        ldr r1, =selected_x
+        ldr r2, =selected_y
         str r0, [r1]
         str r0, [r2]
         
@@ -107,7 +107,7 @@ handle_selection__switch:
 
 handle_selection__zoom_in:
         // Load the current grid size, increment it and store it back.
-        ldr r0, =GRID_SIZE
+        ldr r0, =grid_size
         ldr r1, [r0]
         add r1, r1, #1
         mov r2, #30             // Maximum value
@@ -121,7 +121,7 @@ handle_selection__zoom_in:
 
 handle_selection__zoom_out:
         // Load the current grid size, decrement it and store it back.
-        ldr r0, =GRID_SIZE
+        ldr r0, =grid_size
         ldr r1, [r0]            // Current grid size
         sub r1, r1, #1          // Subtract from current grid size
         mov r2, #1              // Minimum value
@@ -134,7 +134,7 @@ handle_selection__zoom_out:
         b handle_selection__end        
 
 handle_selection__select:
-        ldr r0, =SELECTED_GRID
+        ldr r0, =selected_grid
         ldr r0, [r0]
 
         // Select threading.
@@ -158,12 +158,12 @@ handle_selection__select:
 
 handle_selection__down:
         // Add one to the selected y-position.
-        ldr r1, =SELECTED_Y
+        ldr r1, =selected_y
         ldr r2, [r1]
 
         // Load the currently selected grid and load the current count
         // for that selection.
-        ldr r4, =SELECTED_GRID
+        ldr r4, =selected_grid
         ldr r4, [r4]
         
         // Zoom-out if the selected grid is zero.
@@ -179,13 +179,13 @@ handle_selection__down:
         mov r0, #3
         cmp r0, r4
         ite eq
-        ldreq r3, =TREADLING_PATTERN_COUNT
-        ldrne r3, =THREADING_SHAFT_COUNT
+        ldreq r3, =treadling_pattern_count
+        ldrne r3, =threading_shaft_count
 
         // Load the maximum value
         ldr r3, [r3]
 
-        // Subtract one from the THREADING_SHAFT_COUNT.
+        // Subtract one from the threading_shaft_count.
         cmp r0, r4
         it ne
         subne r3, r3, #1
@@ -205,7 +205,7 @@ handle_selection__down:
         
 handle_selection__up:
         // Zoom-in if the selected grid is zero.
-        ldr r4, =SELECTED_GRID
+        ldr r4, =selected_grid
         ldr r4, [r4]
         cmp r4, #0
         it eq
@@ -214,7 +214,7 @@ handle_selection__up:
         
         // Subtract one from the selected y-position. If the
         // subtraction overflows we store zero instead.
-        ldr r1, =SELECTED_Y
+        ldr r1, =selected_y
         ldr r2, [r1]
         subs r2, r2, #1
         it mi
@@ -227,7 +227,7 @@ handle_selection__up:
 
 handle_selection__forward:
         // Return false if the selected grid is zero.
-        ldr r4, =SELECTED_GRID
+        ldr r4, =selected_grid
         ldr r4, [r4]
         cmp r4, #0
         it eq
@@ -236,7 +236,7 @@ handle_selection__forward:
         
         // Subtract one from the selected x-position. If the
         // subtraction overflows we store zero instead.
-        ldr r1, =SELECTED_X
+        ldr r1, =selected_x
         ldr r2, [r1]
         subs r2, r2, #1
         it mi
@@ -249,12 +249,12 @@ handle_selection__forward:
         
 handle_selection__backward:
         // Add one to the selected x-position.
-        ldr r1, =SELECTED_X
+        ldr r1, =selected_x
         ldr r2, [r1]
 
         // Load the currently selected grid and load the current count
         // for that selection.
-        ldr r4, =SELECTED_GRID
+        ldr r4, =selected_grid
         ldr r4, [r4]
 
         // Return false if the selected grid is zero.
@@ -267,13 +267,13 @@ handle_selection__backward:
         mov r0, #1
         cmp r0, r4
         ite eq
-        ldreq r3, =THREADING_PATTERN_COUNT
-        ldrne r3, =THREADING_SHAFT_COUNT
+        ldreq r3, =threading_pattern_count
+        ldrne r3, =threading_shaft_count
 
         // Load the maximum value
         ldr r3, [r3]
 
-        // Subtract one for the THREADING_SHAFT_COUNT value.
+        // Subtract one for the threading_shaft_count value.
         cmp r0, r4
         it ne
         subne r3, r3, #1
@@ -298,10 +298,10 @@ select_threading:
         push {lr}
         push {r4-r7}
         
-        ldr r0, =THREADING
-        ldr r1, =SELECTED_X
+        ldr r0, =threading
+        ldr r1, =selected_x
         ldr r1, [r1]
-        ldr r2, =SELECTED_Y
+        ldr r2, =selected_y
         
         // Move to the treadling address for the current x-selection.
         mov r3, #BYTES_PER_REG
@@ -318,7 +318,7 @@ select_threading:
 
         // Check if the selected x-position is larger than the
         // threading pattern count and increase it.
-        ldr r6, =THREADING_PATTERN_COUNT
+        ldr r6, =threading_pattern_count
         ldr r3, [r6]
         cmp r1, r3
         add r4, r1, #1
@@ -343,9 +343,9 @@ select_tieup:
         push {lr}
         push {r4}
 
-        ldr r0, =TIEUP
-        ldr r1, =SELECTED_X
-        ldr r2, =SELECTED_Y
+        ldr r0, =tieup
+        ldr r1, =selected_x
+        ldr r2, =selected_y
 
         // Move to the tie-up address for the current x-selection.
         mov r3, #BYTES_PER_REG
@@ -375,9 +375,9 @@ select_treadling:
         push {lr}
         push {r4-r5}
         
-        ldr r0, =TREADLING
-        ldr r1, =SELECTED_X
-        ldr r2, =SELECTED_Y
+        ldr r0, =treadling
+        ldr r1, =selected_x
+        ldr r2, =selected_y
         ldr r3, [r2]
 
         // Move to the treadling address for the current x-selection.
@@ -398,7 +398,7 @@ select_treadling:
 
         // Check if the selected y-position is larger than the
         // treadling pattern count and increase it.
-        ldr r2, =TREADLING_PATTERN_COUNT
+        ldr r2, =treadling_pattern_count
         ldr r4, [r2]
 
         // Compare the current pattern count with the selected
@@ -431,7 +431,7 @@ blink_selection:
         push {lr}
         
         // Increment the current tick
-        ldr r0, =SELECTION_TICK
+        ldr r0, =selection_tick
         ldr r1, [r0]
         add r1, r1, #1
         str r1, [r0]
@@ -445,13 +445,13 @@ blink_selection:
         str r1, [r0]
 
         // Toggle the selection
-        ldr r0, =SHOW_SELECTION
+        ldr r0, =show_selection
         ldr r1, [r0]
         eor r1, r1, #1
         str r1, [r0]
 
         // Set flag for main loop to redraw
-        ldr r0, =REDRAW_NEEDED
+        ldr r0, =redraw_needed
         mov r1, #1
         str r1, [r0]
 

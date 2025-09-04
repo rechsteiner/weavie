@@ -14,11 +14,11 @@ draw_weaving_draft:
         bl reset_drawing
 
         // Number of shafts (threading height).
-        ldr r4, =THREADING_SHAFT_COUNT
+        ldr r4, =threading_shaft_count
         ldr r4, [r4]
 
         // Current grid size.
-        ldr r8, =GRID_SIZE
+        ldr r8, =grid_size
         ldr r8, [r8]
 
         // Treadling count.
@@ -98,7 +98,7 @@ draw_weaving_draft__drawdown:
         bl draw_drawdown
 
 draw_weaving_draw__selection:
-        ldr r0, =SELECTED_GRID
+        ldr r0, =selected_grid
         ldr r0, [r0]
 
         mov r1, #1
@@ -164,11 +164,11 @@ draw_threading:
         mov r10, r3
 
         // Load the current grid size.
-        ldr r7, =GRID_SIZE
+        ldr r7, =grid_size
         ldr r7, [r7]
         
         // Draw box around grid if threading is selected.
-        ldr r5, =SELECTED_GRID
+        ldr r5, =selected_grid
         ldr r5, [r5]
         cmp r5, #1
         it eq
@@ -185,11 +185,11 @@ draw_threading__setup:
         bl draw_grid
         
         // Threading pattern width.
-        ldr r4, =THREADING_PATTERN_COUNT
+        ldr r4, =threading_pattern_count
         ldr r4, [r4]
         
         // Load the start of the threading data
-        ldr r5, =THREADING
+        ldr r5, =threading
         
         // Calculate the starting x-coordinate by multiplying the
         // number of grids with the grid size.
@@ -243,11 +243,11 @@ draw_treadling:
         mov r10, r3
 
         // Load the current grid size.
-        ldr r9, =GRID_SIZE
+        ldr r9, =grid_size
         ldr r9, [r9]
 
         // Draw box around grid if treadling is selected.
-        ldr r5, =SELECTED_GRID
+        ldr r5, =selected_grid
         ldr r5, [r5]
         cmp r5, #3
         it eq
@@ -264,11 +264,11 @@ draw_treadling__setup:
         bl draw_grid
         
         // Treadling counter
-        ldr r4, =TREADLING_PATTERN_COUNT
+        ldr r4, =treadling_pattern_count
         ldr r4, [r4]
         
         // Load the start of the treadling data
-        ldr r5, =TREADLING
+        ldr r5, =treadling
 
 draw_treadling__loop:
         mov r0, r6
@@ -300,7 +300,7 @@ draw_treadling_row:
         push {r4-r9}
 
         // Load the current grid size.
-        ldr r4, =GRID_SIZE
+        ldr r4, =grid_size
         ldr r4, [r4]
 
         // This will be used to test against each bit, starting with
@@ -367,11 +367,11 @@ draw_tieup:
         mov r11, r3
 
         // Load the current grid size.
-        ldr r4, =GRID_SIZE
+        ldr r4, =grid_size
         ldr r4, [r4]
 
         // Draw box around grid if tie-up is selected.
-        ldr r5, =SELECTED_GRID
+        ldr r5, =selected_grid
         ldr r5, [r5]
         cmp r5, #2
         it eq
@@ -379,7 +379,7 @@ draw_tieup:
 
 draw_tieup__setup:
         // Load the current grid size.
-        ldr r4, =GRID_SIZE
+        ldr r4, =grid_size
         ldr r4, [r4]
 
         // Draw the grid behind using the r2 and r3 values already
@@ -397,7 +397,7 @@ draw_tieup__setup:
         add r9, r9, r6
         
         // Load the start of the tie-up data
-        ldr r5, =TIEUP
+        ldr r5, =tieup
 
 draw_tieup__line:
         // Load the value of the current tieup address.
@@ -469,11 +469,11 @@ draw_drawdown:
         mov r5, r1
 
         // Threading pattern count (tile width).
-        ldr r6, =THREADING_PATTERN_COUNT
+        ldr r6, =threading_pattern_count
         ldr r6, [r6]
 
         // Treadling pattern count (tile height).
-        ldr r12, =TREADLING_PATTERN_COUNT
+        ldr r12, =treadling_pattern_count
         ldr r12, [r12]
 
 draw_drawdown__column:
@@ -534,7 +534,7 @@ draw_drawdown__column_row:
         // Add the height of the tile to the y-coordinate so we move
         // down to the next "row".
         mov r0, r8
-        ldr r1, =GRID_SIZE
+        ldr r1, =grid_size
         ldr r1, [r1]
         mul r0, r0, r1
         add r7, r7, r0
@@ -545,7 +545,7 @@ draw_drawdown__column_end:
         // Subtract the width of the tile to the x-coordinate so we
         // move down to the previous "column".
         mov r0, r9
-        ldr r1, =GRID_SIZE
+        ldr r1, =grid_size
         ldr r1, [r1]
         mul r0, r0, r1
         sub r4, r4, r0
@@ -566,7 +566,7 @@ draw_drawdown_remaining_size:
 
         // Divide the remaining height on the grid size to see how
         // many rectangles we can fit.
-        ldr r1, =GRID_SIZE
+        ldr r1, =grid_size
         ldr r1, [r1]
         sdiv r1, r0, r1
 
@@ -596,14 +596,14 @@ draw_drawdown_tile:
         mov r4, r3  // Height
         
         // Store the initial treadling address 
-        ldr r5, =TREADLING
+        ldr r5, =treadling
 
 draw_drawdown_tile__loop_row:
         // Counter for number of columns
         mov r7, r12
         
         // Reset the threading address for each row
-        ldr r8, =THREADING
+        ldr r8, =threading
         
         // Calculate the combined tie-up value for the current
         // treadling row.
@@ -626,7 +626,7 @@ draw_drawdown_tile__loop_column:
 
         // TODO: Load the once at the start of the function.
         // Load the current grid size
-        ldr r2, =GRID_SIZE
+        ldr r2, =grid_size
         ldr r2, [r2]
 
         // Draw rectangle
@@ -643,7 +643,7 @@ draw_drawdown_tile__loop_column_end:
         // Move the x-coordinate to the next column by subtracting the
         // current grid size.
         // TODO: Load the once at the start of the function.
-        ldr r2, =GRID_SIZE
+        ldr r2, =grid_size
         ldr r2, [r2]
         sub r10, r10, r2
 
@@ -679,7 +679,7 @@ tieup_for_treadling_row:
         mov r4, #4              // Number of treadles.
         mov r5, #0              // Initial tie-up value.
         mov r6, r0              // Treadling row value.
-        ldr r7, =TIEUP          // Tie-up address.
+        ldr r7, =tieup          // Tie-up address.
 
 tieup_for_treadling_row__loop:
         // Shift a bit into the correct position and check if the
@@ -719,7 +719,7 @@ draw_selection_box:
         push {lr}
         push {r4-r5}
         
-        ldr r5, =GRID_SIZE
+        ldr r5, =grid_size
         ldr r5, [r5]
 
         sub r0, r0, #2          // Offset
@@ -742,13 +742,13 @@ draw_selection:
         push {r4-r9}
         
         // Load the current selection from memory.
-        ldr r4, =SELECTED_X
-        ldr r5, =SELECTED_Y
+        ldr r4, =selected_x
+        ldr r5, =selected_y
         ldr r4, [r4]
         ldr r5, [r5]
 
         // Load the current grid size.
-        ldr r8, =GRID_SIZE
+        ldr r8, =grid_size
         ldr r8, [r8]
         
         // Multiply the selected x-position with the grid size and
@@ -771,9 +771,9 @@ draw_selection:
         mov r2, r8
         mov r3, r8
 
-        // Skip drawing the selected cell if SHOW_SELECTION is
+        // Skip drawing the selected cell if show_selection is
         // false. This is used to blink the cursor.
-        ldr r9, =SHOW_SELECTION
+        ldr r9, =show_selection
         ldr r9, [r9]
         cmp r9, #0
         beq draw_selection__clear

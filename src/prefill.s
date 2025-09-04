@@ -11,11 +11,11 @@ prefill_pattern:
         nop
 
 prefill_pattern__treadling:
-        ldr r0, =TREADLING_PATTERN_COUNT
+        ldr r0, =treadling_pattern_count
         mov r1, #18
         str r1, [r0]
         
-        ldr r0, =TREADLING
+        ldr r0, =treadling
         mov r1, 0b1000
         str r1, [r0], #BYTES_PER_REG
         mov r1, 0b0100
@@ -54,15 +54,15 @@ prefill_pattern__treadling:
         str r1, [r0], #BYTES_PER_REG
 
 prefill_pattern__threading:
-        ldr r0, =THREADING_SHAFT_COUNT
+        ldr r0, =threading_shaft_count
         mov r1, #BYTES_PER_REG
         str r1, [r0]
         
-        ldr r0, =THREADING_PATTERN_COUNT
+        ldr r0, =threading_pattern_count
         mov r1, #18
         str r1, [r0]
         
-        ldr r0, =THREADING
+        ldr r0, =threading
         mov r1, #BYTES_PER_REG
         str r1, [r0], #BYTES_PER_REG
         mov r1, #3
@@ -101,7 +101,7 @@ prefill_pattern__threading:
         str r1, [r0], #BYTES_PER_REG
 
 prefill_pattern__tieup:
-        ldr r0, =TIEUP
+        ldr r0, =tieup
         mov r1, #0b1001
         str r1, [r0], #BYTES_PER_REG
         mov r1, #0b0011

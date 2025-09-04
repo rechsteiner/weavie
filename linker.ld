@@ -14,4 +14,9 @@ SECTIONS
         *(.text*)
         *(.rodata*)
     } >FLASH
+
+    .data : 
+    {
+        *(.data*)
+    } >RAM
 }

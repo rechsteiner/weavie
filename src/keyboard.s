@@ -7,7 +7,7 @@
 .include "constants.s"
 
 setup_keyboard:
-        ldr r0, =KEY_PRESSED_STATE
+        ldr r0, =key_pressed_state
         mov r1, #0
         str r1, [r0]
         bx lr
@@ -16,13 +16,13 @@ keyboard_increment:
         push {lr}
 
         // Skip incrementing if nothing is pressed.
-        ldr r2, =KEY_PRESSED_STATE
+        ldr r2, =key_pressed_state
         ldr r2, [r2]
         cmp r2, #0
         beq keyboard_increment__end
 
         // Increment the keyboard delay.
-        ldr r0, =KEYBOARD_TICK
+        ldr r0, =keyboard_tick
         ldr r1, [r0]
         add r1, r1, #1
         str r1, [r0]
@@ -38,7 +38,7 @@ pressed_keys:
         push {r4-r6}
         
         // Load the cached key state.
-        ldr r1, =KEY_PRESSED_STATE
+        ldr r1, =key_pressed_state
         ldr r3, [r1]
 
         // Load the current button states.
@@ -57,7 +57,7 @@ pressed_keys:
 
         // Skip the upcoming cache check if it's been 150ms since last
         // time. This lets us hold down keys to repeat.
-        ldr r5, =KEYBOARD_TICK
+        ldr r5, =keyboard_tick
         ldr r5, [r5]
         cmp r5, #150
         bhi pressed_keys__repeat_ready
@@ -73,17 +73,17 @@ pressed_keys:
 
 pressed_keys__repeat_ready:
         // Reset the keyboard delay timer.
-        ldr r5, =KEYBOARD_TICK
+        ldr r5, =keyboard_tick
         mov r6, #0
         str r6, [r5]
 
         // Reset the selection blinking when repeating pressed keys.
-        ldr r5, =SELECTION_TICK
+        ldr r5, =selection_tick
         mov r6, #0
         str r6, [r5]
 
         // Ensure that the cursor is visible after repeating.
-        ldr r5, =SHOW_SELECTION
+        ldr r5, =show_selection
         mov r6, #1
         str r6, [r5]
         
@@ -91,7 +91,7 @@ pressed_keys__repeat_ready:
 
 pressed_keys__nothing_pressed:
         // Reset the keyboard delay.
-        ldr r5, =KEYBOARD_TICK
+        ldr r5, =keyboard_tick
         mov r6, #0
         str r6, [r5]
         b pressed_keys__released
