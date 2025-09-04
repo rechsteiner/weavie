@@ -33,7 +33,7 @@ build/main.elf: $(OBJECTS)
 	arm-none-eabi-ld -T linker.ld -o $@ $^
 
 build/%.o: src/%.s | build
-	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mimplicit-it=always -Isrc $< -o $@
+	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -Isrc $< -o $@
 
 build:
 	mkdir -p build

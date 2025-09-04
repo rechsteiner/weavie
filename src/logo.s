@@ -1,8 +1,6 @@
 .syntax unified
-.cpu cortex-m4
-.thumb
-
 .section .text
+
 .include "constants.s"
 
 .global draw_logo

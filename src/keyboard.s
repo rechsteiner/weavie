@@ -1,6 +1,4 @@
 .syntax unified
-.cpu cortex-m4
-.thumb
 
 .global setup_keyboard
 .global pressed_keys
